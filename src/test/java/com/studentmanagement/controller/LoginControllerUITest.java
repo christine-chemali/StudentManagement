@@ -167,5 +167,16 @@ public class LoginControllerUITest {
         assertThat(usernameField.getText()).isEqualTo("exceptionUser");
         assertThat(passwordField.getText()).isEmpty();
     }
+
+    @Test
+    public void testLongCredentials(FxRobot robot){
+        //Test with the very long username and password
+        String longString = "a".repeat(100);
+        robot.clickOn(usernameField).write(longString);
+        robot.clickOn(passwordField).write(longString);
+        robot.clickOn("#buttonLogin");
+        //Verify authentication was called with the long strings
+        verify(authServiceMock).authenticate(longString, longString);
+    }
     
 }
