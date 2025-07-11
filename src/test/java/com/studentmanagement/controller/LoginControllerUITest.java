@@ -1,10 +1,12 @@
 package com.studentmanagement.controller;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -72,5 +74,14 @@ public class LoginControllerUITest {
     public void tearDown() throws Exception{
         FxToolkit.cleanupStages();
     }
-    
+
+    @Test
+    public void testSuccessfulLogin(FxRobot robot){
+        //Simulate user input
+        robot.clickOn(usernameField).write("validUser");
+        robot.clickOn(passwordField).write("validPass");
+        robot.clickOn("#buttonLogin");
+        //Verify that authentication was callled with the correct parameters
+        verify(authServiceMock).authenticate("validUser", "validPass");
+    }
 }
