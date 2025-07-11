@@ -149,6 +149,7 @@ public class LoginControllerUITest {
         //Simulate successful login
         robot.clickOn(usernameField).write("validUser");
         robot.clickOn(passwordField).write("validPass");
+        robot.clickOn("#buttonLogin");
         //Verify fields are cleared after successful login
         assertThat(usernameField.getText()).isEmpty();
         assertThat(passwordField.getText()).isEmpty();
@@ -160,6 +161,7 @@ public class LoginControllerUITest {
         when(authServiceMock.authenticate(("exceptionUser"), "exceptionPass")).thenThrow(new RuntimeException("test exception"));
         //Simulate login that will cause exception
         robot.clickOn(usernameField).write("exceptionUser");
+        robot.clickOn(passwordField).write("exceptionPass");
         robot.clickOn("#buttonLogin");
         //Close the error dialog
         robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
@@ -185,6 +187,7 @@ public class LoginControllerUITest {
         String specialChars = "!@#$%^&*()_+{}[]|\"':;<>,.?/";
         robot.clickOn(usernameField).write(specialChars);
         robot.clickOn(passwordField).write(specialChars);
+        robot.clickOn("#buttonLogin");
         //Verify authentication was called with special characters
         verify(authServiceMock).authenticate(specialChars, specialChars);
     }
