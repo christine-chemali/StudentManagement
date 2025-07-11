@@ -1,6 +1,7 @@
 package com.studentmanagement.controller;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
+import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
 import com.studentmanagement.service.AuthenticationService;
@@ -21,6 +23,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 @ExtendWith({MockitoExtension.class, ApplicationExtension.class})
@@ -84,4 +87,15 @@ public class LoginControllerUITest {
         //Verify that authentication was callled with the correct parameters
         verify(authServiceMock).authenticate("validUser", "validPass");
     }
+
+    @Test
+    public void testEmptyFields(FxRobot robot){
+        //Click on the login button without filling in the fields
+        robot.clickOn("#buttonLogin");
+        //Verify that authentication was not called
+        verify(authServiceMock, never()).authenticate(anyString(), anyString());
+        //close the error dialog
+        robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+    }
+    
 }
