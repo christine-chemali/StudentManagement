@@ -144,4 +144,14 @@ public class LoginControllerUITest {
         robot.clickOn("#buttonRegister");
     }
 
+    @Test
+    public void testSuccessfulLoginClearsFields(FxRobot robot){
+        //Simulate successful login
+        robot.clickOn(usernameField).write("validUser");
+        robot.clickOn(passwordField).write("validPass");
+        //Verify fields are cleared after successful login
+        assertThat(usernameField.getText()).isEmpty();
+        assertThat(passwordField.getText()).isEmpty();
+    }
+
 }
