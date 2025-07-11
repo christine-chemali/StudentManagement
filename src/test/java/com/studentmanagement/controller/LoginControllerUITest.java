@@ -1,9 +1,8 @@
 package com.studentmanagement.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.quality.Strictness;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
@@ -42,6 +42,7 @@ public class LoginControllerUITest {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "false");
         System.setProperty("prism.order", "sw");
+        System.setProperty("prism.text", "t2k");
         System.setProperty("java.awt.headless", "false");
     }
 
@@ -49,7 +50,7 @@ public class LoginControllerUITest {
     public void start(Stage stage) throws Exception{
         //Load FXML
         FXMLLoader loader = new
-        FXMLLoader(getClass().getResource("/fxml/login.xml"));
+        FXMLLoader(getClass().getResource("/fxml/login.fxml"));
         Parent root = loader.load();
         loginController = loader.getController();
 
@@ -89,6 +90,21 @@ public class LoginControllerUITest {
     }
 
     @Test
+    public void testFailedLogin(FxRobot robot) {
+        //Simulate user input
+        robot.clickOn(usernameField).write("invalidUser");
+        robot.clickOn(passwordField).write("anyPassword");
+        robot.clickOn("#buttonLogin");
+        //Verify that authentication was called with the correct parameters
+        verify(authServiceMock).authenticate("invalidUser", "anyPassword");
+        //Close the information dialog (by pressing Enter)
+        robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //Verify that the password field is empty but not the username field
+        assertThat(usernameField.getText()).isEqualTo("invalidUser");
+        assertThat(passwordField.getText()).isEmpty();
+    }
+
+    @Test
     public void testEmptyFields(FxRobot robot){
         //Click on the login button without filling in the fields
         robot.clickOn("#buttonLogin");
@@ -97,5 +113,35 @@ public class LoginControllerUITest {
         //close the error dialog
         robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
     }
-    
+
+    @Test
+    public void testEmptyUsername(FxRobot robot){
+        //Fill in only the password
+        robot.clickOn(passwordField).write("password");
+        robot.clickOn("#buttonLogin");
+        //Verify that authentication was not called
+        verify(authServiceMock, never()).authenticate(anyString(), anyString());
+        //Close the error dialog
+        robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+    }
+
+        @Test
+    public void testEmptyPassword(FxRobot robot) {
+        // Fill in only the username
+        robot.clickOn(usernameField).write("username");
+        robot.clickOn("#buttonLogin");
+        
+        // Verify that authentication was not called
+        verify(authServiceMock, never()).authenticate(anyString(), anyString());
+        
+        // Close the error dialog
+        robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+    }
+
+    @Test
+    public void testRegisterNavigation(FxRobot robot){
+        //Click on the register button
+        robot.clickOn("#buttonRegister");
+    }
+
 }

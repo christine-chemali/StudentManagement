@@ -13,10 +13,10 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         // load login view
-        //Parent root = FXMLLoader.load(getClass().getResource("/fxml/login.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/login.fxml"));
         
         // Comment up and uncomment down to have the main application tab view
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/tab.fxml"));
+        //Parent root = FXMLLoader.load(getClass().getResource("/fxml/tab.fxml"));
 
         // load register view
         //Parent root = FXMLLoader.load(getClass().getResource("/fxml/register.fxml"));
