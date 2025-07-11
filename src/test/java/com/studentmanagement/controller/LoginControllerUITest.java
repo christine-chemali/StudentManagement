@@ -178,5 +178,15 @@ public class LoginControllerUITest {
         //Verify authentication was called with the long strings
         verify(authServiceMock).authenticate(longString, longString);
     }
-    
+
+    @Test
+    public void testSpecialCharactersInCredentials(FxRobot robot){
+        //Test with special characters
+        String specialChars = "!@#$%^&*()_+{}[]|\"':;<>,.?/";
+        robot.clickOn(usernameField).write(specialChars);
+        robot.clickOn(passwordField).write(specialChars);
+        //Verify authentication was called with special characters
+        verify(authServiceMock).authenticate(specialChars, specialChars);
+    }
+
 }
