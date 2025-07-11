@@ -154,4 +154,18 @@ public class LoginControllerUITest {
         assertThat(passwordField.getText()).isEmpty();
     }
 
+    @Test
+    public void testAuthenticationException(FxRobot robot){
+        //Setup mock to throw an exception
+        when(authServiceMock.authenticate(("exceptionUser"), "exceptionPass")).thenThrow(new RuntimeException("test exception"));
+        //Simulate login that will cause exception
+        robot.clickOn(usernameField).write("exceptionUser");
+        robot.clickOn("#buttonLogin");
+        //Close the error dialog
+        robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //Verify password field is cleared but username remains
+        assertThat(usernameField.getText()).isEqualTo("exceptionUser");
+        assertThat(passwordField.getText()).isEmpty();
+    }
+    
 }
