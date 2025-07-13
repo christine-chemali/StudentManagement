@@ -46,7 +46,20 @@ class LoginControllerUnitTest {
         when(authServiceMock.authenticate("testuser", "wrongpassword")).thenReturn(false);
         //Verify that authentication failed
         boolean result = authServiceMock.authenticate("testuser","wrongpassword");
-        assert result;
+        assert !result;
+    }
+
+    @Test
+    void testLoginException() throws Exception{
+        //Config mock to simulate exception
+        when(authServiceMock.authenticate("testuser", "exceptionpassword")).thenThrow(new RuntimeException("Test exception"));
+        //Verify the exception is launched
+        try{
+            authServiceMock.authenticate("testuser", "exceptionpassword");
+            assert false;
+        } catch (RuntimeException e){
+            assert "Test exception".equals(e.getMessage());
+        }
     }
 
 }
