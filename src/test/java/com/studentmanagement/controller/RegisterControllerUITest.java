@@ -149,4 +149,17 @@ public class RegisterControllerUITest {
         robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
     }
 
+    @Test
+    public void testPasswordNoSpecialChar(FxRobot robot){
+        //Fill in with password that has no special character
+        robot.clickOn(usernameField).write("surnom");
+        robot.clickOn(passwordField).write("Motdepasse123");
+        robot.clickOn(confirmPasswordField).write("Motdepasse123");
+        robot.clickOn("#buttonRegister");
+        //Verify that register was not called
+        verify(authServiceMock, never()).register(any(User.class));
+        //Close the error dialog
+        robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+    }
+
 }
