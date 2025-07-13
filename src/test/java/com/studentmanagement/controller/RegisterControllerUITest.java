@@ -122,5 +122,17 @@ public class RegisterControllerUITest {
         //Close the error dialog
         robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
     }  
-     
+
+    @Test
+    public void testPasswordNoUppercase(FxRobot robot){
+        //Fill in with password that has no uppercase letter
+        robot.clickOn(usernameField).write("surnom");
+        robot.clickOn(passwordField).write("motdepasse123!");
+        robot.clickOn(confirmPasswordField).write("motdepasse123!");
+        robot.clickOn("#buttonRegister");
+        //Verify that register was not called
+        verify(authServiceMock, never()).register(any(User.class));
+        //Close the error dialog
+        robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+    }
 }
