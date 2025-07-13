@@ -109,4 +109,18 @@ public class RegisterControllerUITest {
         assertThat(confirmPasswordField.getText()).isEmpty();
         assertThat(usernameField.getText()).isEqualTo("surnom");
     }
+
+    @Test
+    public void testPasswordTooShort(FxRobot robot){
+        //Fill in with password that's too short‼
+        robot.clickOn(usernameField).write("surnom");
+        robot.clickOn(passwordField).write("Mp1!");
+        robot.clickOn(confirmPasswordField).write("Mp1!");
+        robot.clickOn("#buttonRegister");
+        //Verify that register was not called
+        verify(authServiceMock, never()).register(any(User.class));
+        //Close the error dialog
+        robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+    }  
+     
 }
