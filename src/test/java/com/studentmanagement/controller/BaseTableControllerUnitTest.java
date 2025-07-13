@@ -47,6 +47,6 @@ class BaseTableControllerUnitTest {
         assertEquals(1, (15 + itemsPerPage -1) / itemsPerPage, "15 éléments devraient donner 1 page");
         assertEquals(2, (16 + itemsPerPage -1) / itemsPerPage, "16 éléments devraient donner 2 pages");
         assertEquals(2, (30 + itemsPerPage - 1) / itemsPerPage, "30 éléments devraiend donner 2 pages");
-        assertEquals(3, (30 + itemsPerPage - 1) / itemsPerPage, "31 éléments devraient donner 3 pages");
+        assertEquals(3, (31 + itemsPerPage - 1) / itemsPerPage, "31 éléments devraient donner 3 pages");
     }
 }
