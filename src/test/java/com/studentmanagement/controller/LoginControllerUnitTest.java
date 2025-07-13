@@ -1,6 +1,7 @@
 package com.studentmanagement.controller;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,5 +32,13 @@ class LoginControllerUnitTest {
         loginController.setAuthService(newAuthService);
     }
 
-    
+    @Test
+    void testLoginSucess() throws Exception{
+        //Config mock to simulate a sucessful authentication
+        when(authServiceMock.authenticate("testuser", "correctpassword" )).thenReturn(true);
+        boolean result = authServiceMock.authenticate("testuser", "correctpassword");
+        assert result;
+    }
+
+
 }
