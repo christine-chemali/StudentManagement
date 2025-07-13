@@ -1,5 +1,6 @@
 package com.studentmanagement.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -92,4 +93,20 @@ public class RegisterControllerUITest {
         robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
     }
 
+    @Test
+    public void testPasswordMismatch(FxRobot robot){
+        //Fill in with mismatched passwords
+        robot.clickOn(usernameField).write("surnom");
+        robot.clickOn(passwordField).write("MotDePasse123!");
+        robot.clickOn(confirmPasswordField).write("MotDePasseDifferent123!");
+        robot.clickOn("#buttonRegister");
+        //Verify that register was not called
+        verify(authServiceMock, never()).register(any(User.class));
+        //Close the error dialog
+        robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //Verify that password fields are cleared
+        assertThat(passwordField.getText()).isEmpty();
+        assertThat(confirmPasswordField.getText()).isEmpty();
+        assertThat(usernameField.getText()).isEqualTo("surnom");
+    }
 }
