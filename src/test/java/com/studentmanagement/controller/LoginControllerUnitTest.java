@@ -1,6 +1,8 @@
 package com.studentmanagement.controller;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +62,18 @@ class LoginControllerUnitTest {
         } catch (RuntimeException e){
             assert "Test exception".equals(e.getMessage());
         }
+    }
+
+    @Test
+    void testAuthServiceInteractions() throws Exception{
+        //Verify that service authentication is called with good parameters
+        authServiceMock.authenticate("user1", "pass1");
+        verify(authServiceMock).authenticate("user1", "pass1");
+
+        authServiceMock.authenticate("user2", "pass2");
+        verify(authServiceMock).authenticate("user2", "pass2");
+
+        verify(authServiceMock, never()).authenticate("wronguser", "wrongpass");
     }
 
 }
