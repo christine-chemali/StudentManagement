@@ -7,12 +7,14 @@ import com.studentmanagement.service.ImportExportService;
 import com.studentmanagement.utils.AlertUtils;
 import com.studentmanagement.utils.SearchCriteria;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
@@ -45,6 +47,7 @@ public  abstract class BaseTableController<T> {
     protected void initialize(){
         initializeServices();
         setupTableColumns();
+        setupTableResizing();
         setupPagination();
         setupSearchAndExport();
         setupImport();
@@ -55,6 +58,52 @@ public  abstract class BaseTableController<T> {
     //Init required services
     protected void initializeServices(){
         importExportService = new ImportExportService();
+    }
+    //Set up table auto-resizing
+    protected void setupTableResizing(){
+        if (dataTable != null){
+            dataTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+            //Rows config
+            dataTable.setRowFactory(tv -> {
+                TableRow<T> row = new TableRow<>();
+                //JavaFx auto calculate
+                row.setPrefHeight(-1);
+                //Min height
+                row.setMinHeight(25); 
+                return row;
+            });
+            //Listener for refresh
+            dataTable.getItems().addListener((javafx.collections.ListChangeListener<T>) change -> {
+                Platform.runLater(() -> dataTable.refresh());
+            });
+        }
+    }
+
+    //Force height re calculate
+    protected void refreshTableRowHeights(){
+        if (dataTable != null) {
+            Platform.runLater(() -> {
+                dataTable.refresh();
+                //double refresh to be sure heights are re calculated
+                Platform.runLater(() -> dataTable.refresh());
+            });
+        }
+    }
+
+    //Auto Resize
+    protected void autoResizeTable(){
+        if(dataTable != null){
+            Platform.runLater(() -> {
+                dataTable.refresh();
+                dataTable.autosize();
+            });
+        }
+    }
+
+    //Configure column sizing
+    protected void setupColumnSizing(){
+        // Default implementation - subclasses can override
+        // to set specific column widths and constraints
     }
 
     //Set up pagination

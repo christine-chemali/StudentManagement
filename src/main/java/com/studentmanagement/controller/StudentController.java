@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -97,10 +98,41 @@ public class StudentController extends BaseTableController<SubjectResult>  {
         //Call parent initialization
         super.initialize();
 
+        //Setup specific column sizing for this table
+        setupColumnSizing();
+
         //Disable grade adding until a student is loaded
         disableGradeControls(true);
     }
 
+    @Override
+    protected void setupColumnSizing() {
+        //Specific config
+        subjectColumn.setPrefWidth(120);
+        subjectColumn.setMinWidth(100);
+        subjectColumn.setResizable(true);
+        
+        gradesColumn.setPrefWidth(130);
+        gradesColumn.setMinWidth(120);
+        gradesColumn.setResizable(true);
+        
+        minAverageColumn.setPrefWidth(80);
+        minAverageColumn.setMinWidth(70);
+        minAverageColumn.setResizable(true);
+        
+        maxAverageColumn.setPrefWidth(80);
+        maxAverageColumn.setMinWidth(70);
+        maxAverageColumn.setResizable(true);
+        
+        studentAverageColumn.setPrefWidth(80);
+        studentAverageColumn.setMinWidth(70);
+        studentAverageColumn.setResizable(true);
+        
+        commentsColumn.setPrefWidth(300);
+        commentsColumn.setMinWidth(200);
+        commentsColumn.setResizable(true);
+    }
+    
     @Override
     protected void setupTableColumns() {
         //Configure columns
@@ -117,47 +149,104 @@ public class StudentController extends BaseTableController<SubjectResult>  {
                     setText(null);
                     return;
                 }
-                VBox container = new VBox(5);
                 
-                //Split grades string into individual grades
+                VBox container = new VBox(3);
+                container.setAlignment(Pos.TOP_LEFT);
+                //fixed height
+                container.setPrefWidth(120);
+                container.setMaxWidth(120);
+                
                 String[] gradesArray = item.split(", ");
                 for (String gradeStr : gradesArray){
-                    HBox gradeBox = new HBox(10);
+                    VBox gradeContainer = new VBox(2); //Vertical container for each row
+                    gradeContainer.setAlignment(Pos.TOP_LEFT);
+                    
+                    //Up row checkBox + grade
+                    HBox gradeBox = new HBox(5);
                     gradeBox.setAlignment(Pos.CENTER_LEFT);
+                    gradeBox.setPrefHeight(25);
+                    gradeBox.setMaxHeight(25);
                     
-                    //Create checkbox for each grade
                     CheckBox checkBox = new CheckBox();
+                    checkBox.setPrefWidth(20);
+                    checkBox.setMinWidth(20);
+                    checkBox.setMaxWidth(20);
+                    
                     Label gradeLabel = new Label(gradeStr);
+                    gradeLabel.setWrapText(false);
+                    gradeLabel.setPrefWidth(-1); 
+                    gradeLabel.setMaxWidth(Double.MAX_VALUE);
                     
-                    //Add edit button
-                    Button editButton = new Button("Je modifie");
-                    editButton.setVisible(false);
+                    gradeBox.getChildren().addAll(checkBox, gradeLabel);
                     
-                    //Add delete button
-                    Button deleteButton = new Button("Je supprime");
-                    deleteButton.setVisible(false);
+                    //bottom row button hidden by default and out of the layout
+                    HBox buttonBox = new HBox(5);
+                    buttonBox.setAlignment(Pos.CENTER_LEFT);
+                    buttonBox.setPrefHeight(0); //no height by default
+                    buttonBox.setMaxHeight(0);  //no height by default
+                    buttonBox.setVisible(false); //hide by default
+                    buttonBox.setManaged(false); //not handled by the default layout
+                    buttonBox.setPadding(new javafx.geometry.Insets(0, 0, 0, 25)); //Indentation
                     
-                    //Show/hide buttons when checkbox is selected
+                    Button editButton = new Button("+");
+                    editButton.setPrefSize(20, 20);
+                    editButton.setMinSize(20, 20);
+                    editButton.setMaxSize(20, 20);
+                    editButton.setTooltip(new Tooltip("Je Modifie cette note"));
+                    
+                    Button deleteButton = new Button("-");
+                    deleteButton.setPrefSize(20, 20);
+                    deleteButton.setMinSize(20, 20);
+                    deleteButton.setMaxSize(20, 20);
+                    deleteButton.setTooltip(new Tooltip("Je supprime cette note"));
+                    
+                    buttonBox.getChildren().addAll(editButton, deleteButton);
+                    
+                    //Show/hide button depending on checkbox state 
                     checkBox.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                        editButton.setVisible(newVal);
-                        deleteButton.setVisible(newVal);
+                        if (newVal) {
+                            //Show give a height make it visible
+                            buttonBox.setPrefHeight(25);
+                            buttonBox.setMaxHeight(25);
+                            buttonBox.setVisible(true);
+                            //Take on the layout
+                            buttonBox.setManaged(true);
+                        } else {
+                            //Hide take of the size and make it invisible 
+                            buttonBox.setPrefHeight(0);
+                            buttonBox.setMaxHeight(0);
+                            buttonBox.setVisible(false);
+                            //Take of the layout 
+                            buttonBox.setManaged(false);
+                        }
+                        
+                        //Re calculate height row
+                        Platform.runLater(() -> {
+                            getTableView().refresh();
+                        });
                     });
                     
-                    //Setup edit action
                     editButton.setOnAction(e -> {
                         SubjectResult result = getTableView().getItems().get(getIndex());
                         showGradeEditDialog(result.getSubject(), gradeStr);
                     });
                     
-                    //Setup delete action
                     deleteButton.setOnAction(e -> {
                         SubjectResult result = getTableView().getItems().get(getIndex());
                         showGradeDeleteConfirmation(result.getSubject(), gradeStr);
                     });
                     
-                    gradeBox.getChildren().addAll(checkBox, gradeLabel, editButton, deleteButton);
-                    container.getChildren().add(gradeBox);
+                    //Add two rows to  vertical container
+                    gradeContainer.getChildren().addAll(gradeBox, buttonBox);
+                    container.getChildren().add(gradeContainer);
                 }
+
+                //Calculate height based on contents without default buttons 
+                //27px per grade (25 per row + 2 spacing) + padding
+                double calculatedHeight = Math.max(25, gradesArray.length * 27 + 6);
+                container.setPrefHeight(calculatedHeight);
+                //Allow dynamic extension
+                container.setMaxHeight(-1); 
                 
                 setGraphic(container);
                 setText(null);
@@ -187,42 +276,58 @@ public class StudentController extends BaseTableController<SubjectResult>  {
                     return;
                 }
                 
-                HBox container = new HBox(10);
-                container.setAlignment(Pos.CENTER_LEFT);
+                VBox container = new VBox(5);
+                container.setAlignment(Pos.TOP_LEFT);
+                container.setPrefWidth(280);
+                container.setMaxWidth(280);
                 
-                //Display comment
                 Label commentLabel = new Label(item != null ? item : "");
+                commentLabel.setWrapText(true);
+                commentLabel.setPrefWidth(250);
+                commentLabel.setMaxWidth(250);
+                commentLabel.setAlignment(Pos.TOP_LEFT);
                 
-                //Create checkbox for editing
                 CheckBox checkBox = new CheckBox();
                 
-                //Add edit button
-                Button editButton = new Button("Je modifie");
+                Button editButton = new Button("+");
                 editButton.setVisible(false);
+                editButton.setPrefSize(20, 20);
+                editButton.setMinSize(20, 20);
+                editButton.setMaxSize(20, 20);
+                editButton.setTooltip(new Tooltip("Je modifie le commentaire"));
                 
-                //Add delete button
-                Button deleteButton = new Button("Je supprime");
+                Button deleteButton = new Button("-");
                 deleteButton.setVisible(false);
+                deleteButton.setPrefSize(20, 20);
+                deleteButton.setMinSize(20, 20);
+                deleteButton.setMaxSize(20, 20);
+                deleteButton.setTooltip(new Tooltip("Je supprime le commentaire"));
                 
-                //Show/hide buttons when checkbox is selected
                 checkBox.selectedProperty().addListener((obs, oldVal, newVal) -> {
                     editButton.setVisible(newVal);
                     deleteButton.setVisible(newVal);
                 });
                 
-                //Setup edit action
                 editButton.setOnAction(e -> {
                     SubjectResult result = getTableView().getItems().get(getIndex());
                     showCommentEditDialog(result.getSubject(), result.getTeacherComment());
                 });
                 
-                //Setup delete action
                 deleteButton.setOnAction(e -> {
                     SubjectResult result = getTableView().getItems().get(getIndex());
                     showCommentDeleteConfirmation(result.getSubject());
                 });
                 
                 container.getChildren().addAll(checkBox, commentLabel, editButton, deleteButton);
+
+                //Calculate height based on text
+                Platform.runLater(() -> {
+                    double textHeight = commentLabel.getBoundsInLocal().getHeight();
+                    //+35 for checkbox and buttons
+                    double calculatedHeight = Math.max(30, textHeight + 35); 
+                    container.setPrefHeight(calculatedHeight);
+                    container.setMaxHeight(calculatedHeight);
+                });
                 setGraphic(container);
                 setText(null);
             }

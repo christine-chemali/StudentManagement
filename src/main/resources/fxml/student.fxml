@@ -89,9 +89,9 @@
                <columns>
                   <TableColumn fx:id="subjectColumn" prefWidth="120" text="Matières" />
                   <TableColumn fx:id="gradesColumn" prefWidth="100" text="Notes" />
-                  <TableColumn fx:id="minAverageColumn" prefWidth="120" text="Moyenne minimum de la classe" />
-                  <TableColumn fx:id="maxAverageColumn" prefWidth="120" text="Moyenne maximum de la classe" />
-                  <TableColumn fx:id="studentAverageColumn" prefWidth="120" text="Moyenne de l'étudiant" />
+                  <TableColumn fx:id="minAverageColumn" prefWidth="120" text="Moy min" />
+                  <TableColumn fx:id="maxAverageColumn" prefWidth="120" text="Moy max" />
+                  <TableColumn fx:id="studentAverageColumn" prefWidth="120" text="Moy" />
                   <TableColumn fx:id="commentsColumn" prefWidth="200" text="Commentaires" />
                </columns>
             </TableView>
