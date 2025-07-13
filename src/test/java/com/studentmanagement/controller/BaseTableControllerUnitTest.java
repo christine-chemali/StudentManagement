@@ -6,14 +6,23 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.studentmanagement.service.ImportExportService;
 import com.studentmanagement.utils.SearchCriteria;
 
 @ExtendWith(MockitoExtension.class)
 class BaseTableControllerUnitTest {
+    
     //Simple test to verify that SearchCriteria can be created
     @Test
     void testSearchCriteriaCreation(){
         SearchCriteria criteria = new SearchCriteria("test");
         assertNotNull(criteria);
+    }
+
+    //Test to verify that import/export can be created
+    @Test
+    void testImportExportServiceCreation(){
+        ImportExportService service = new ImportExportService();
+        assertNotNull(service);
     }
 }
