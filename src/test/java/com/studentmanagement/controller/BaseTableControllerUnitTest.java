@@ -1,5 +1,6 @@
 package com.studentmanagement.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import com.studentmanagement.utils.SearchCriteria;
 
 @ExtendWith(MockitoExtension.class)
 class BaseTableControllerUnitTest {
-    
+
     //Simple test to verify that SearchCriteria can be created
     @Test
     void testSearchCriteriaCreation(){
@@ -25,4 +26,15 @@ class BaseTableControllerUnitTest {
         ImportExportService service = new ImportExportService();
         assertNotNull(service);
     }
+
+    //Test to verify the number of pages calculation
+    @Test
+    void testPageCalculation(){
+        int totalItems = 30;
+        int itemsPerPage = 15;
+        int expectedPages = (totalItems + itemsPerPage -1) / itemsPerPage;
+        assertEquals(2, expectedPages);
+    }
+
+    
 }
