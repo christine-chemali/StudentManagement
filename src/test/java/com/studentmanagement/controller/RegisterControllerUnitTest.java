@@ -80,7 +80,30 @@ public class RegisterControllerUnitTest {
             alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), anyString()));
         }
     }
-    
+
+    @Test
+    public void testHandleRegisterWithPasswordMismatch() throws Exception{
+        try(MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+            //Setup mock behavior for password mismatch
+            when(textFieldUsernameMock.getText()).thenReturn("UtilisateurValide");
+            when(textFieldPasswordMock.getText()).thenReturn("Motdepasse123!");
+            when(textFieldConfirmPasswordMock.getText()).thenReturn("MotdepasseDifferent123!");
+            //Call handleRegister using reflection
+            Method handleRegisterMethod = RegisterController.class.getDeclaredMethod("handleRegister");
+            handleRegisterMethod.setAccessible(true);
+            handleRegisterMethod.invoke(registerController);
+            //Verify that register was not called
+            verify(authServiceMock, never()).register(any(User.class));
+            //Verify that an error alert was shown
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), anyString()));
+            //Verify that password fields were cleared
+            verify(textFieldPasswordMock).clear();
+            verify(textFieldConfirmPasswordMock).clear();
+            //Verify that username field get focus
+            verify(textFieldUsernameMock).requestFocus();
+        }
+    }
+
     //Helper method to inject mock objects into private fields
     private void injectField(Object target, String fieldName, Object value) throws Exception{
         Field field = target.getClass().getDeclaredField(fieldName);
