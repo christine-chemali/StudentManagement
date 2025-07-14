@@ -1,11 +1,15 @@
 package com.studentmanagement.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+
+import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -195,7 +199,25 @@ public class RegisterControllerUITest {
     @Test
     public void testBackToLoginNavigation(FxRobot robot){
         //Click on the back to login button
-        robot.clickOn("buttonBackToLogin");
+        robot.clickOn("#buttonBackToLogin");
+    }
+
+    @Test
+    public void testAuthServiceInjection(){
+        //Create a mock for the authentication service
+        AuthenticationService authServiceMock = mock(AuthenticationService.class);
+        //Inject mock in controller
+        registerController.setAuthService(authServiceMock);
+        //Verify if the service is well injected using reflexion
+        try{
+            Field authServiceField = RegisterController.class.getDeclaredField("authService");
+            authServiceField.setAccessible(true);
+            AuthenticationService injectedService = (AuthenticationService) authServiceField.get(registerController);
+            //Verify that the injected service is the same as the mock
+            assertThat(injectedService).isEqualTo(authServiceMock);
+        } catch (Exception e){
+            fail("Exception lors de l'accès au champ authService: " + e.getMessage());
+        }
     }
 
 }
