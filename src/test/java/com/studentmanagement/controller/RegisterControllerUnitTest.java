@@ -159,6 +159,24 @@ public class RegisterControllerUnitTest {
         }
     }
 
+    @Test
+    public void testPasswordValidationTooShort() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+            //Setup mock behavior for password that's too short
+            when(textFieldUsernameMock.getText()).thenReturn("utilisateurValide");
+            when(textFieldPasswordMock.getText()).thenReturn("Mp1!");  //Only 4 characters
+            when(textFieldConfirmPasswordMock.getText()).thenReturn("Mp1!");
+            //Call handleRegister using reflection
+            Method handleRegisterMethod = RegisterController.class.getDeclaredMethod("handleRegister");
+            handleRegisterMethod.setAccessible(true);
+            handleRegisterMethod.invoke(registerController);
+            //Verify that register was not called
+            verify(authServiceMock, never()).register(any(User.class));
+            //Verify that error alert was shown with message containing length requirement
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), argThat(msg -> msg.contains("8 caractères"))));
+        }
+    }
+
     //Helper method to inject mock objects into private fields
     private void injectField(Object target, String fieldName, Object value) throws Exception{
         Field field = target.getClass().getDeclaredField(fieldName);
