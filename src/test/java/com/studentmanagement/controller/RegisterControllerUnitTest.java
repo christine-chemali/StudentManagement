@@ -215,6 +215,31 @@ public class RegisterControllerUnitTest {
         }
     }
 
+    @Test
+    public void testHandleBackToLoginWithException() throws Exception{
+        try (MockedStatic<SceneUtils> sceneUtilsMock = mockStatic(SceneUtils.class);
+            MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+            //Mock the Stage
+            Stage stageMock = mock(Stage.class);
+            when(buttonBackToLoginMock.getScene()).thenReturn(mock(javafx.scene.Scene.class));
+            when(buttonBackToLoginMock.getScene().getWindow()).thenReturn(stageMock);
+            //Configure SceneUtils to throw exception
+            sceneUtilsMock.when(() -> SceneUtils.changeScene(
+                any(Stage.class), 
+                anyString(), 
+                anyString()
+            )).thenThrow(new RuntimeException("Erreur lors du chargement de la page login"));
+            //Call handleBackToLogin using reflection
+            Method handleBackToLoginMethod = RegisterController.class.getDeclaredMethod("handleBackToLogin");
+            handleBackToLoginMethod.setAccessible(true);
+            handleBackToLoginMethod.invoke(registerController);
+            //Verify that error alert was shown
+            alertUtilsMock.verify(() -> 
+                AlertUtils.showError(eq("Erreur"), anyString()));
+        }
+    }
+
+
 
     //Helper method to inject mock objects into private fields
     private void injectField(Object target, String fieldName, Object value) throws Exception{
