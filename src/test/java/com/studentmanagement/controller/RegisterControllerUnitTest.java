@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -21,9 +22,11 @@ import org.mockito.quality.Strictness;
 import com.studentmanagement.model.User;
 import com.studentmanagement.service.AuthenticationService;
 import com.studentmanagement.utils.AlertUtils;
+import com.studentmanagement.utils.SceneUtils;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -176,6 +179,42 @@ public class RegisterControllerUnitTest {
             alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), argThat(msg -> msg.contains("8 caractères"))));
         }
     }
+    
+    @Test
+    public void testHandleBackToLogin() throws Exception{
+        try (MockedStatic<SceneUtils> sceneUtilsMock = mockStatic(SceneUtils.class);
+            MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+            //Mock the Stage
+            Stage stageMock = mock(Stage.class);
+            when(buttonBackToLoginMock.getScene()).thenReturn(mock(javafx.scene.Scene.class));
+            when(buttonBackToLoginMock.getScene().getWindow()).thenReturn(stageMock);
+            //Mock the LoginController
+            LoginController loginControllerMock = mock(LoginController.class);
+            //Configure SceneUtils to return the mocked LoginController
+            sceneUtilsMock.when(() -> SceneUtils.changeScene(
+                eq(stageMock), 
+                eq("/fxml/login.fxml"), 
+                eq("ÉduSys - Connection")
+            )).thenReturn(loginControllerMock);
+            //Call handleBackToLogin using reflection
+            Method handleBackToLoginMethod = RegisterController.class.getDeclaredMethod("handleBackToLogin");
+            handleBackToLoginMethod.setAccessible(true);
+            handleBackToLoginMethod.invoke(registerController);
+            //Verify that form was cleared
+            verify(textFieldUsernameMock).clear();
+            verify(textFieldPasswordMock).clear();
+            verify(textFieldConfirmPasswordMock).clear();
+            //Verify that SceneUtils.changeScene was called
+            sceneUtilsMock.verify(() -> SceneUtils.changeScene(
+                eq(stageMock), 
+                eq("/fxml/login.fxml"), 
+                eq("ÉduSys - Connection")
+            ));
+            // Verify that authService was injected into login controller
+            verify(loginControllerMock).setAuthService(authServiceMock);
+        }
+    }
+
 
     //Helper method to inject mock objects into private fields
     private void injectField(Object target, String fieldName, Object value) throws Exception{
