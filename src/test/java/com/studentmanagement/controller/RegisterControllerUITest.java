@@ -191,4 +191,11 @@ public class RegisterControllerUITest {
         //Verify that the exception is handle without crashing test
         assertThat(true).isTrue();
     }
+
+    @Test
+    public void testBackToLoginNavigation(FxRobot robot){
+        //Click on the back to login button
+        robot.clickOn("buttonBackToLogin");
+    }
+
 }
