@@ -2,6 +2,7 @@ package com.studentmanagement.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -160,6 +161,21 @@ public class RegisterControllerUITest {
         verify(authServiceMock, never()).register(any(User.class));
         //Close the error dialog
         robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+    }
+
+    @Test
+    public void testUserAlreadyExists(FxRobot robot){
+        //Config mock to make an RuntimeException
+        doThrow(new RuntimeException("L'utilisateur existe déja")).when(authServiceMock).register(any(User.class));
+        //Fill in with password that has no special character
+        robot.clickOn(usernameField).write("utilisateurExistant");
+        robot.clickOn(passwordField).write("Motdepasse123!");
+        robot.clickOn(confirmPasswordField).write("Motdepasse123!");
+        robot.clickOn("#buttonRegister");
+        //Close the error dialog
+        robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //Verify that the fields are already full
+        assertThat(usernameField.getText()).isEqualTo("utilisateurExistant");
     }
 
 }
