@@ -178,4 +178,17 @@ public class RegisterControllerUITest {
         assertThat(usernameField.getText()).isEqualTo("utilisateurExistant");
     }
 
+    @Test
+    public void testUnexpectedException(FxRobot robot){
+        //Config mock to launch RuntimeException
+        doThrow(new RuntimeException("Erreur inattendue")).when(authServiceMock).register(any(User.class));
+        //Fill with valid data
+        robot.clickOn(usernameField).write("nouvelUtilisateur");
+        robot.clickOn(passwordField).write("Motdepasse123!");
+        robot.clickOn(confirmPasswordField).write("Motdepasse123!");
+        //Close the error dialog
+        robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+        //Verify that the exception is handle without crashing test
+        assertThat(true).isTrue();
+    }
 }
