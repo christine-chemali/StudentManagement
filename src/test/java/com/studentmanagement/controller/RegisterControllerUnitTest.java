@@ -239,6 +239,17 @@ public class RegisterControllerUnitTest {
         }
     }
 
+    @Test
+    public void testClearForm() throws Exception{
+        //Call clearForm using reflection
+        Method clearFormMethod = RegisterController.class.getDeclaredMethod("clearForm");
+        clearFormMethod.setAccessible(true);
+        clearFormMethod.invoke(registerController);
+        //Verify that all text fields were cleared
+        verify(textFieldUsernameMock).clear();
+        verify(textFieldPasswordMock).clear();
+        verify(textFieldConfirmPasswordMock).clear();
+    }
 
 
     //Helper method to inject mock objects into private fields
