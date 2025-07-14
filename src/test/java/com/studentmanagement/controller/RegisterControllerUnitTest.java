@@ -123,6 +123,24 @@ public class RegisterControllerUnitTest {
         }
     }
 
+    @Test
+    public void testPasswordValidationMissingLowercase() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+            // Setup mock behavior for password missing lowercase
+            when(textFieldUsernameMock.getText()).thenReturn("utilisateurValide");
+            when(textFieldPasswordMock.getText()).thenReturn("MOTDEPASSEVALIDE123!");
+            when(textFieldConfirmPasswordMock.getText()).thenReturn("MOTDEPASSEVALIDE123!");
+            //Call handleRegister using reflection
+            Method handleRegisterMethod = RegisterController.class.getDeclaredMethod("handleRegister");
+            handleRegisterMethod.setAccessible(true);
+            handleRegisterMethod.invoke(registerController);
+            //Verify that register was not called
+            verify(authServiceMock, never()).register(any(User.class));
+            //Verify that error alert was shown with message containing lowercase requirement
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), argThat(msg -> msg.contains("minuscule"))));
+        }
+    }
+
     //Helper method to inject mock objects into private fields
     private void injectField(Object target, String fieldName, Object value) throws Exception{
         Field field = target.getClass().getDeclaredField(fieldName);
