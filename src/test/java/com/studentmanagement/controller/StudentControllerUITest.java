@@ -1,5 +1,6 @@
 package com.studentmanagement.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -177,6 +179,18 @@ public class StudentControllerUITest {
     @AfterEach
     public void tearDown() throws Exception{
         FxToolkit.cleanupStages();
+    }
+
+    @Test
+    public void testInitialState(FxRobot robot){
+        //Verify that controls are disabled initially
+        assertThat(subjectComboBox.isDisabled()).isTrue();
+        assertThat(gradeField.isDisabled()).isTrue();
+        assertThat(coefficientField.isDisabled()).isTrue();
+        assertThat(commentArea.isDisabled()).isTrue();
+        //Verify that student info labels are empty or have default text
+        assertThat(studentNameLabel.getText()).contains("Nom de l'étudiant");
+        assertThat(studentClassLabel.getText()).contains("Classe");
     }
 
 
