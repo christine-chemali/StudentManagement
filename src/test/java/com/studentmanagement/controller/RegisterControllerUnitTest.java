@@ -1,20 +1,31 @@
 package com.studentmanagement.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import com.studentmanagement.model.User;
 import com.studentmanagement.service.AuthenticationService;
+import com.studentmanagement.utils.AlertUtils;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -52,6 +63,24 @@ public class RegisterControllerUnitTest {
 
     }
 
+    @Test
+    public void testHandleRegisterWithEmptyFields() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+            //Setup mock behavior for empty fields
+            when(textFieldUsernameMock.getText()).thenReturn("");
+            when(textFieldPasswordMock.getText()).thenReturn("MotdepasseValide123!");
+            when(textFieldConfirmPasswordMock.getText()).thenReturn("MotdepasseValide123!");
+            //Call handleRegister using reflection
+            Method handleRegisterMethod = RegisterController.class.getDeclaredMethod("handleRegister");
+            handleRegisterMethod.setAccessible(true);
+            handleRegisterMethod.invoke(registerController);
+            //Verify that register was not called
+            verify(authServiceMock, never()).register(any(User.class));
+            //Verify that an error alert was shown
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), anyString()));
+        }
+    }
+    
     //Helper method to inject mock objects into private fields
     private void injectField(Object target, String fieldName, Object value) throws Exception{
         Field field = target.getClass().getDeclaredField(fieldName);
