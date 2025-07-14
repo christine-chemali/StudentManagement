@@ -141,6 +141,24 @@ public class RegisterControllerUnitTest {
         }
     }
 
+    @Test
+    public void testPasswordValidationMissingSpecialChar() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+            //Setup mock behavior for password missing special character
+            when(textFieldUsernameMock.getText()).thenReturn("utilisateurValide");
+            when(textFieldPasswordMock.getText()).thenReturn("Motdepasse123");
+            when(textFieldConfirmPasswordMock.getText()).thenReturn("Motdepasse123");
+            //Call handleRegister using reflection
+            Method handleRegisterMethod = RegisterController.class.getDeclaredMethod("handleRegister");
+            handleRegisterMethod.setAccessible(true);
+            handleRegisterMethod.invoke(registerController);
+            //Verify that register was not called
+            verify(authServiceMock, never()).register(any(User.class));
+            //Verify that error alert was shown with message containing special character requirement
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), argThat(msg -> msg.contains("caractère spécial"))));
+        }
+    }
+
     //Helper method to inject mock objects into private fields
     private void injectField(Object target, String fieldName, Object value) throws Exception{
         Field field = target.getClass().getDeclaredField(fieldName);
