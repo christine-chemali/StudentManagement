@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -191,6 +192,28 @@ public class StudentControllerUITest {
         //Verify that student info labels are empty or have default text
         assertThat(studentNameLabel.getText()).contains("Nom de l'étudiant");
         assertThat(studentClassLabel.getText()).contains("Classe");
+    }
+
+     @Test
+    public void testSuccessfulStudentLoad(FxRobot robot){
+        //Load a valid student
+        robot.clickOn(studentIdField).write("1");
+        robot.clickOn("#okButton");
+        //Verify student service was called
+        verify(studentServiceMock).getStudentByID(1L);
+        //Verify UI is updated
+        assertThat(studentNameLabel.getText()).contains("Jean Dupont");
+        assertThat(studentClassLabel.getText()).contains("5A");   
+        //Verify controls are enabled
+        assertThat(subjectComboBox.isDisabled()).isFalse();
+        assertThat(gradeField.isDisabled()).isFalse();
+        assertThat(coefficientField.isDisabled()).isFalse();
+        assertThat(commentArea.isDisabled()).isFalse();
+        //Verify table is populated with all subjects
+        assertThat(gradesTable.getItems()).hasSize(13);
+        assertThat(gradesTable.getItems().get(0).getSubject()).isEqualTo("Français");
+        assertThat(gradesTable.getItems().get(1).getSubject()).isEqualTo("Anglais");
+        assertThat(gradesTable.getItems().get(2).getSubject()).isEqualTo("Mathématiques");
     }
 
 
