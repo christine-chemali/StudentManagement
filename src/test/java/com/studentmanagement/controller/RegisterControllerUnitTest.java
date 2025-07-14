@@ -3,6 +3,7 @@ package com.studentmanagement.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -101,6 +102,24 @@ public class RegisterControllerUnitTest {
             verify(textFieldConfirmPasswordMock).clear();
             //Verify that username field get focus
             verify(textFieldUsernameMock).requestFocus();
+        }
+    }
+
+    @Test
+    public void testPasswordValidationMissingUppercase() throws Exception{
+        try(MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+            //Setup mock behavior for password missing uppercase
+            when(textFieldUsernameMock.getText()).thenReturn("utilisateurValide");
+            when(textFieldPasswordMock.getText()).thenReturn("motdepassevalide123!");
+            when(textFieldConfirmPasswordMock.getText()).thenReturn("motdepassevalide123!");
+            //Call handleRegister using reflection
+            Method handleRegisterMethod = RegisterController.class.getDeclaredMethod("handleRegister");
+            handleRegisterMethod.setAccessible(true);
+            handleRegisterMethod.invoke(registerController);
+            //Verify that register was not called
+            verify(authServiceMock, never()).register(any(User.class));
+            //Verify that error alert was shown with message containint uppercase requirement
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), argThat(msg -> msg.contains("majuscule"))));
         }
     }
 
