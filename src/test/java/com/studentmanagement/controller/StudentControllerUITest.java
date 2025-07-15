@@ -255,6 +255,22 @@ public class StudentControllerUITest {
         assertThat(subjectComboBox.isDisabled()).isTrue();
     }
 
+    @Test
+    public void testInvalidStudentIdFormat(FxRobot robot){
+        //Try to load with invalid format
+        robot.clickOn(studentIdField).write("abc");
+        robot.clickOn("#okButton");
+        //Verify student service was not called
+        verify(studentServiceMock, never()).getStudentByID(anyLong());
+        //Close error dialog if it appears
+        try{
+            robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+        } catch (Exception e){
+            //Dialog might not appear or might be closed already
+        }
+        //Verify field content
+        assertThat(studentIdField.getText()).isEqualTo("abc");
+    }
 
 }
 
