@@ -372,6 +372,63 @@ public class StudentControllerUITest {
     }
 
     @Test
+    public void testAddGradeInvalidFormat(FxRobot robot){
+        System.out.println("Début du test testAddGradeInvalidFormat");
+        try{
+            //Set up a dialog handler that automatically responds to alerts
+            setupAutomaticDialogHandler();
+            //Load a valid Student
+            System.out.println("Chargement de l'étudiant");
+            loadValidStudent(robot);
+            System.out.println("Etudiant chargé avec succès");
+            //Wait for the UI to update
+            WaitForAsyncUtils.waitForFxEvents();
+            //Select a subject
+            ComboBox<String> comboBox = robot.lookup("#subjectComboBox").queryComboBox();
+            robot.interact(() -> {
+                comboBox.getSelectionModel().select("Français");
+                System.out.println("Matière selectionnée : " + comboBox.getValue());
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+            //Fill in the grade field with an invalid format text
+            System.out.println("Saisie d'une note au format invalide (texte) ...");
+            TextField gradeTextField = robot.lookup("#gradeField").queryAs(TextField.class);
+            robot.interact(() -> {
+                gradeTextField.clear();
+                gradeTextField.setText("quinze");
+            });
+            //Fill in the coeff field with a valid value
+            TextField coeffTextField = robot.lookup("#coefficientField").queryAs(TextField.class);
+            robot.interact(() -> {
+                coefficientField.clear();
+                coefficientField.setText("1");
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+            //Click the add button
+            Button addButton = robot.lookup("#addGradeButton").queryButton();
+            System.out.println("Clic sur le bouton d'ajout ...");
+            robot.interact(() -> addButton.requestFocus());
+            WaitForAsyncUtils.waitForFxEvents();
+            robot.interact(() -> {
+                Event.fireEvent(addButton, new ActionEvent(addButton, null));
+            });
+            //Wait for the action to be processed
+            WaitForAsyncUtils.waitForFxEvents();
+            //Verify that the service was not called because the format is invalid
+            System.out.println("Vérification que le service n'a pas été apellé ...");
+            verify(gradeServiceMock, never()).saveGrade(any(Grade.class));
+            //Verify that the fields are not cleared because the opertation failed
+            assertThat(gradeTextField.getText()).isEqualTo("quinze");
+            assertThat(coeffTextField.getText()).isEqualTo("1");
+            System.out.println("Test réussi : le format invalide a été rejeté");
+        } catch (Exception e){
+            System.out.println("Exception dans le test : " + e.getMessage());
+            e.printStackTrace();
+            fail("Le test a échoué avec une exception : " + e.getMessage());
+        }
+    }
+
+    @Test
     public void testAddGradeOutOfRange(FxRobot robot){
         System.out.println("Début du test testGradeOutOfRange");
         try{
