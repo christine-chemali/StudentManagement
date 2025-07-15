@@ -1,17 +1,20 @@
 package com.studentmanagement.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +28,9 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
 
+import com.studentmanagement.model.Grade;
 import com.studentmanagement.model.Student;
 import com.studentmanagement.service.GradeService;
 import com.studentmanagement.service.StudentService;
@@ -33,16 +38,24 @@ import com.studentmanagement.service.SubjectCommentService;
 import com.studentmanagement.utils.SearchCriteria;
 import com.studentmanagement.utils.SubjectResult;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.scene.Node;
+
 
 @ExtendWith({MockitoExtension.class, ApplicationExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -270,6 +283,92 @@ public class StudentControllerUITest {
         }
         //Verify field content
         assertThat(studentIdField.getText()).isEqualTo("abc");
+    }
+
+    @Test
+    public void testAddGradeSuccess(FxRobot robot){
+        //Activate logging
+        System.out.println("Début du test testAddGradeSuccess");
+        try{
+            //Setup a dialog handler that automatically responds to alerts
+            setupAutomaticDialogHandler();
+        }
+    }
+
+    //Method to set up an automatic dialog handler
+    private void setupAutomaticDialogHandler(){
+        //Set up a handler for dialog boxes
+        Thread dialogWatcherThread = new Thread(() ->{
+            try{
+                while(true){
+                    //Check if a dialog box is present
+                    Platform.runLater(() -> {
+                        try{
+                            //look for various types of dialog boxes
+                            Stage dialogStage = getTopModalStage();
+                            if(dialogStage != null){
+                                System.out.println("Boite de dialogue détéctée, fermeture automatique ...");
+                                //Simulate a click on the OK or Close button
+                                Button okButton = findButtonInDialog(dialogStage, "OK");
+                                if (okButton != null){
+                                    Event.fireEvent(okButton, new ActionEvent(okButton, null));
+                                } else{
+                                    //Close the window if no button is found
+                                    dialogStage.close();
+                                }
+                                System.out.println("Boite de dialogue fermée");
+                            }
+                        } catch (Exception e){
+                            System.out.println("Erreur lors de la gestion automatique de la boite de dialogue : " + e.getMessage());
+                        }
+                    });
+                    //Wait before the next check
+                    Thread.sleep(500);
+                }
+            } catch (InterruptedException e){
+                //Thread interrupted, this is normal at the end of the test
+                System.out.println("Gestionnaire de dialogue interrompu");
+            }
+        });
+        //Start the thread as a daemon so it terminates with the test
+        dialogWatcherThread.setDaemon(true);
+        dialogWatcherThread.start();
+    }
+
+    //Method to find the top modal window
+    private Stage getTopModalStage(){
+        //Retrieve all windows
+        for (Window window : Stage.getWindows()){
+            if (window instanceof Stage){ 
+                Stage stage = (Stage) window;
+                //Check if it is a modal and visible window
+                if (stage.isShowing() && stage.getModality() != Modality.NONE){
+                return stage;
+                }
+            }
+        }
+        return null;
+    }
+
+    //Method to find a button in a dialog
+    private Button findButtonInDialog(Stage dialogStage, String buttonText){
+        //Traverse all nodes in the scene to find a button
+        Scene scene = dialogStage.getScene();
+        if (scene != null && scene.getRoot() != null){
+            return findButtonInNode(scene.getRoot(), buttonText);
+        }
+        return null;
+    }
+
+    //Recursive method to find a button in a node
+    private Button findButtonInNode(Node node, String buttonText){
+        if (node instanceof Button){
+            Button button = (Button) node;
+            if (button.getText().equalsIgnoreCase(buttonText)){
+                return button;
+            }
+        }
+        return null;
     }
 
 }
