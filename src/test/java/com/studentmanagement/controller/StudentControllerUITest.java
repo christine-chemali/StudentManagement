@@ -485,6 +485,64 @@ public class StudentControllerUITest {
         }
     }
 
+    @Test
+    public void testAddGradeWithoutSubject(FxRobot robot){
+        System.out.println("Début du test testAddGradeWithoutSubject");
+        try{
+            //Set up a dialog handler that automatically responds to alerts
+            setupAutomaticDialogHandler();
+            //Load a valid student
+            System.out.println("Chargement de l'étudiant ...");
+            loadValidStudent(robot);
+            System.out.println("Etudiant chargé avec succès");
+            //Wait for the UI to update
+            WaitForAsyncUtils.waitForFxEvents();
+            //Do not select a subject, leave the ComboBox empty
+            ComboBox<String> comboBox = robot.lookup("#subjectComboBox").queryComboBox();
+            robot.interact(() -> {
+                comboBox.getSelectionModel().clearSelection();
+                System.out.println("Aucune matière selectionnée");
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+            //Fill in the grade field with a valid value
+            System.out.println("Saisie d'une note valide ...");
+            TextField gradeTextField = robot.lookup("#gradeField").queryAs(TextField.class);
+            robot.interact(() -> {
+                gradeTextField.clear();
+                gradeTextField.setText("15");
+            });
+            //Fill in the coefficient field with a valid value
+            System.out.println("Saisie d' un coefficient valide ...");
+            TextField coeffTextField = robot.lookup("#coefficientField").queryAs(TextField.class);
+            robot.interact(() -> {
+                coeffTextField.clear();
+                coeffTextField.setText("2");
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+            //Click the add Button
+            Button addButton = robot.lookup("#addGradeButton").queryButton();
+            System.out.println("Clic sur le bouton d'ajout ...");
+            robot.interact(() -> addButton.requestFocus());
+            WaitForAsyncUtils.waitForFxEvents();
+            robot.interact(() ->{
+                Event.fireEvent(addButton, new ActionEvent(addButton, null));
+            });
+            //Wait for the action to be processed
+            WaitForAsyncUtils.waitForFxEvents();
+            //Verify that the service was not called because no subject is selected
+            System.out.println("Vérification que le service n'a pas été appelé ...");
+            verify(gradeServiceMock, never()).saveGrade(any(Grade.class));
+            //Verify that the fields are not cleared because the operation failed
+            assertThat(gradeTextField.getText()).isEqualTo("15");
+            assertThat(coeffTextField.getText()).isEqualTo("2");
+            System.out.println("Test réussi : L'ajout sans matière a été rejeté");
+        } catch (Exception e){
+            System.out.println("Exception dans le test : " + e.getMessage());
+            e.printStackTrace();
+            fail("Le test a échoué avec une exception : " + e.getMessage());
+        }
+    }
+
     //Method to set up an automatic dialog handler
     private void setupAutomaticDialogHandler(){
         //Set up a handler for dialog boxes
