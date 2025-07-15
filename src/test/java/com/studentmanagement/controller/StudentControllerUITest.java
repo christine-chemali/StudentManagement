@@ -2,9 +2,11 @@ package com.studentmanagement.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -235,6 +237,22 @@ public class StudentControllerUITest {
         assertThat(gradeField.isDisable()).isTrue();
         assertThat(coefficientField.isDisable()).isTrue();
         assertThat(commentArea.isDisable()).isTrue();
+    }
+
+    @Test
+    public void testEmptyStudentId(FxRobot robot){
+        //Try to load without entering student ID
+        robot.clickOn("#okButton");  
+        //Verify student service was not called
+        verify(studentServiceMock, never()).getStudentByID(anyLong());
+        //Close error dialog if it appears
+        try {
+            robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+        } catch (Exception e) {
+            // Dialog might not appear or might be closed already
+        } 
+        // Verify controls remain disabled
+        assertThat(subjectComboBox.isDisabled()).isTrue();
     }
 
 
