@@ -292,6 +292,10 @@ public class StudentControllerUITest {
         try{
             //Setup a dialog handler that automatically responds to alerts
             setupAutomaticDialogHandler();
+            //Load a valid student
+            System.out.println("Chargement de l'étudiant ...");
+            loadValidStudent(robot);
+            System.out.println("Etudiant chargé avec succès");
         }
     }
 
@@ -369,6 +373,21 @@ public class StudentControllerUITest {
             }
         }
         return null;
+    }
+
+    //Helper method to load a valid student
+    private void loadValidStudent(FxRobot robot){
+        TextField idField = robot.lookup("#studentIdField").queryAs(TextField.class);
+        robot.interact(() -> {
+            idField.clear();
+            idField.setText("1");
+        });
+        WaitForAsyncUtils.waitForFxEvents();
+        Button okButton = robot.lookup("#okButton").queryButton();
+        robot.clickOn(okButton);
+        //Wait for the UI to update
+        WaitForAsyncUtils.waitForFxEvents();
+        System.out.println("Nom de l'étudiant chargé : " + studentNameLabel.getText());
     }
 
 }
