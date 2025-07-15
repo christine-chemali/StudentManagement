@@ -39,6 +39,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 @ExtendWith({MockitoExtension.class, ApplicationExtension.class})
@@ -216,5 +217,26 @@ public class StudentControllerUITest {
         assertThat(gradesTable.getItems().get(2).getSubject()).isEqualTo("Mathématiques");
     }
 
+    @Test
+    public void testInvalidStudentId(FxRobot robot){
+        //Try to load non existent student
+        robot.clickOn(studentIdField).write("999");
+        robot.clickOn("#okButton");
+        //Verify student service was called
+        verify(studentServiceMock).getStudentByID(999L);
+        //Close error dialog
+        try{
+            robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
+        } catch (Exception e){
+            //dialog might not appear or already closed
+        }
+        //Verify controld remain disabled
+        assertThat(subjectComboBox.isDisable()).isTrue();
+        assertThat(gradeField.isDisable()).isTrue();
+        assertThat(coefficientField.isDisable()).isTrue();
+        assertThat(commentArea.isDisable()).isTrue();
+    }
+
 
 }
+
