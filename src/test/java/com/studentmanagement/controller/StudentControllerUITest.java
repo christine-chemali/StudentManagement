@@ -296,6 +296,78 @@ public class StudentControllerUITest {
             System.out.println("Chargement de l'étudiant ...");
             loadValidStudent(robot);
             System.out.println("Etudiant chargé avec succès");
+            //Wait for the UI to update
+            WaitForAsyncUtils.waitForFxEvents();
+            //Check the initial state of the console
+            System.out.println("Etat du subjectComboBox : " + (subjectComboBox.isDisabled() ? "désactivé" : "activé"));
+            //Select a subject 
+            ComboBox<String> comboBox = robot.lookup("#subjectComboBox").queryComboBox();
+            System.out.println("ComboBox trouvé : " + comboBox);
+            System.out.println("Items dans le ComboBox : " + comboBox.getItems());
+            robot.interact(() -> {
+                if(!comboBox.getItems().isEmpty()){
+                    comboBox.getSelectionModel().select("Mathématiques");
+                    System.out.println("Matière sélectionnée : " + comboBox.getValue());
+                } else{
+                    System.out.println("Le ComboBox est vide !");
+                }
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+            //Fill in the grade field
+            System.out.println("Remplissage du champ de note ... ");
+            TextField gradeTextField = robot.lookup("#gradeField").queryAs(TextField.class);
+            robot.interact(() -> {
+                gradeTextField.clear();
+                gradeTextField.setText("16.5");
+                System.out.println("Texte du champ de note après saisie : " + gradeTextField.getText());
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+            //Fill in the coefficient field
+            System.out.println("Remplissage du champ de coefficient ...");
+            TextField coeffTextField = robot.lookup("#coefficientField").queryAs(TextField.class);
+            robot.interact(() -> {
+                coeffTextField.clear();
+                coeffTextField.setText("2");
+                System.out.println("Texte du champ de coefficient après saisie : " + coeffTextField.getText());
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+            //Check the state before clicking the button
+            System.out.println("Vérification avant clic sur le bouton : ");
+            System.out.println("- Matière : " + comboBox.getValue());
+            System.out.println("- Note : " + gradeTextField.getText());
+            System.out.println(" - Coefficient : " + coeffTextField.getText());
+            //Click the add button
+            Button addButton = robot.lookup("#addGradeButton").queryButton();
+            System.out.println("Etat du bouton : " + (addButton.isDisabled() ? "désactivé" : "activé"));
+            if(!addButton.isDisabled()){
+                System.out.println("Clic sur le bouton d'ajout ...");
+                robot.interact(() -> addButton.requestFocus());
+                WaitForAsyncUtils.waitForFxEvents();
+                //Directly triggering the action event
+                robot.interact(() -> {
+                    System.out.println("Déclenchement direct de l'évenement d'action ...");
+                    Event.fireEvent(addButton, new ActionEvent(addButton, null));
+                });
+                System.out.println("Evenement déclenché");
+            } else {
+                System.out.println("Le bouton est désactivé, impossible de cliquer");
+            }
+            //Wait for the action to be processed
+            WaitForAsyncUtils.waitForFxEvents();
+            //Verify that the service was called 
+            System.out.println("Vérification de l'appel au service ...");
+            verify(gradeServiceMock, timeout(5000)).saveGrade(any(Grade.class));
+            System.out.println("Service appelé avec succès");
+            //Wait for the field to be cleared
+            WaitForAsyncUtils.waitFor(5, TimeUnit.SECONDS, () -> gradeTextField.getText().isEmpty() && coeffTextField.getText().isEmpty());
+            //Check the final state
+            System.out.println("Etat final : ");
+            System.out.println("- Champ de note : " + gradeTextField.getText());
+            System.out.println("- Champ de coefficient : " + coeffTextField.getText());
+        } catch (Exception e){
+            System.out.println("Exception dans le test : " + e.getClass().getName() + ":" + e.getMessage());
+            e.printStackTrace();
+            fail("Le test a échoué avec une exception : " + e.getMessage());
         }
     }
 
