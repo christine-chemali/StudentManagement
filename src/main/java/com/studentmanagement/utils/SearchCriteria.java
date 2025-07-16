@@ -2,7 +2,7 @@ package com.studentmanagement.utils;
 
 //Minimum verion to compile without errors
 public class SearchCriteria {
-    @SuppressWarnings("unused")
+
     private String searchValue;
     @SuppressWarnings("unused")
     private int pageNumber = 1;
@@ -33,6 +33,6 @@ public class SearchCriteria {
     }
 
     public String getSearchValue() {
-        throw new UnsupportedOperationException("Unimplemented method 'getSearchValue'");
+                return searchValue;
     }
 }

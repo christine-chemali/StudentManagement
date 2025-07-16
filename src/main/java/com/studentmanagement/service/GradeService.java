@@ -27,6 +27,7 @@ public class GradeService {
     }
     
     public int countBySubject(Long studentId, String searchValue) {
-        return 0;
+        return 13;
     }
+    
 }
