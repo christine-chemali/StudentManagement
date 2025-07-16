@@ -1,6 +1,7 @@
 package com.studentmanagement.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -45,8 +46,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -633,6 +636,116 @@ public class StudentControllerUITest {
         WaitForAsyncUtils.waitForFxEvents();
         System.out.println("Nom de l'étudiant chargé : " + studentNameLabel.getText());
     }
+        
+    @Test
+    public void testCheckboxShowsButtons(FxRobot robot){
+        System.out.println("Début du test testCheckboxShowsButtons");
+        try{
+            //Load a valid student
+            System.out.println("Chargement de l'étudiant ...");
+            loadValidStudent(robot);
+            System.out.println("Etudiant chargé avec succès");
 
+            WaitForAsyncUtils.waitForFxEvents();
+
+            TableView<SubjectResult> table = robot.lookup("#gradesTable").queryTableView();
+            //Ensure the table contains data
+            WaitForAsyncUtils.waitFor(5, TimeUnit.SECONDS, () -> !table.getItems().isEmpty());
+            System.out.println("Le tableau contient " + table.getItems().size() + " éléments");
+            int subjectIndex = 0;
+
+            //Verify the table has at least one item
+            if(table.getItems().isEmpty()){
+                fail("Aucune matière n'a été trouvée dans le tableau ...");
+            }
+            //Get the name of the first subject
+            String subjectName = table.getItems().get(subjectIndex).getSubject();
+            System.out.println("La première matière trouvée est : " + subjectName + " à l'index " + subjectIndex);
+            //Select the row
+            final int finalSubjectIndex = subjectIndex;
+            robot.interact(() -> {
+                table.getSelectionModel().select(finalSubjectIndex);
+                table.scrollTo(finalSubjectIndex);
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+
+            //Get the grade cell (second column, index 1)
+            TableCell<?, ?> gradeCell = robot.lookup(".table-cell").nth(finalSubjectIndex * table.getColumns().size() + 1).query();
+            System.out.println("Cellule des notes trouvée");
+
+            //Find the checkbox in the cell
+            CheckBox checkBox = robot.from(gradeCell).lookup(".check-box").queryAs(CheckBox.class);
+            System.out.println("Checkbox trouvée, état initial: " + (checkBox.isSelected() ? "sélectionnée" : "non sélectionnée"));
+
+            robot.clickOn(checkBox);
+
+            WaitForAsyncUtils.waitForFxEvents();
+            System.out.println("Checkbox cliquée, nouvel état: " + (checkBox.isSelected() ? "sélectionnée" : "non sélectionnée"));
+            try{
+                Thread.sleep(500);
+            } catch(InterruptedException e){
+                e.printStackTrace();
+            }
+            WaitForAsyncUtils.waitForFxEvents();
+
+            //Check that the + and - buttons appear
+            System.out.println("Recherche des boutons + et -...");
+            Button plusButton = null;
+            Button minusButton = null;
+            try{
+                plusButton = robot.lookup(".button").match(node -> 
+                    node instanceof Button && 
+                    ((Button)node).getText() != null && 
+                    ((Button)node).getText().equals("+") && 
+                    node.isVisible()).queryButton();
+                System.out.println("Bouton '+' trouvé et visible");
+            } catch (Exception e){
+                System.out.println("Bouton '+' non trouvé: " + e.getMessage());
+            }
+            try{
+                minusButton = robot.lookup(".button").match(node -> 
+                    node instanceof Button && 
+                    ((Button)node).getText() != null && 
+                    ((Button)node).getText().equals("-") && 
+                    node.isVisible()).queryButton();
+                System.out.println("Bouton '-' trouvé et visible");
+            } catch (Exception e){
+                System.out.println("Bouton '-' non trouvé: " + e.getMessage());
+            }
+
+            //Verify that at least one button is visible
+            assertTrue(plusButton != null || minusButton != null, 
+                  "Les boutons + et/ou - devraient être visibles après avoir cliqué sur la checkbox");
+
+            //If the + button is found, click on it to verify a window appears
+            if (plusButton != null){
+            System.out.println("Clic sur le bouton '+'...");
+                robot.clickOn(plusButton);
+
+                WaitForAsyncUtils.waitForFxEvents();
+                //Wait for a dialog to appear
+                boolean dialogAppeared = false;
+
+                try{
+                    WaitForAsyncUtils.waitFor(3, TimeUnit.SECONDS, () -> 
+                        robot.lookup(".dialog-pane").tryQuery().isPresent() || 
+                        robot.lookup(".text-field").tryQuery().isPresent());
+                    dialogAppeared = true;
+                    System.out.println("Fenêtre de dialogue détectée");
+                } catch (Exception e){
+                     System.out.println("Aucune fenêtre de dialogue détectée: " + e.getMessage());
+                }
+                assertTrue(dialogAppeared, 
+                      "Une fenêtre de dialogue devrait s'ouvrir après avoir cliqué sur le bouton '+'");
+            }
+            System.out.println("Test réussi: Les boutons apparaissent correctement après clic sur la checkbox");
+            
+        } catch (Exception e){
+        System.out.println("Exception dans le test: " + e.getMessage());
+            e.printStackTrace();
+            fail("le test a échoué avec une exception : " + e.getMessage());
+        }
+    }
+    
 }
 
