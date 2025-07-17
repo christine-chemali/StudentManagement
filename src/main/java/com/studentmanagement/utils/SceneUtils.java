@@ -7,9 +7,18 @@ import javafx.stage.Stage;
 
 //Utility class for managing scenes
 public class SceneUtils {
-    
+
+    /**
+     * Changes the current scene of the given stage to a new FXML view
+     * @param <T> the type of the controller associated with the FXML
+     * @param stage the stage to change the scene for
+     * @param fxmlPath the path to the FXML file
+     * @param title the title to set for the stage
+     * @return the controller associated with the loaded FXML
+     * @throws Exception if loading the FXML fails
+     */
     public static <T> T changeScene(Stage stage, String fxmlPath, String title) throws Exception {
-        //Load the new view
+
         FXMLLoader loader = new FXMLLoader(SceneUtils.class.getResource(fxmlPath));
         Parent root = loader.load();
         
@@ -20,14 +29,11 @@ public class SceneUtils {
             currentScene = new Scene(root);
             stage.setScene(currentScene);
         } else {
-            //Replace the content of the existing scene
             currentScene.setRoot(root);
         }
         
-        // Set the title
         stage.setTitle(title);
-        
-        // Return the controller
+
         return loader.getController();
     }
 }
