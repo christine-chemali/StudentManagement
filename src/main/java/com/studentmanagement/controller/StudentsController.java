@@ -114,7 +114,7 @@ public class StudentsController extends BaseTableController<Student> {
     //Config the TableView for displaying student data
     @Override
     protected void setupTableColumns(){
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("studentId"));
         firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         ageColumn.setCellValueFactory(new PropertyValueFactory<>("age"));
