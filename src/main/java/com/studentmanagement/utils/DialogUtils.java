@@ -31,16 +31,32 @@ public class DialogUtils {
         private TextField textField;
         private String initialValue;
 
+        /**
+         * Represents a dialog field with a labek and a text input
+         * @param label the label for the dialog field
+         * @param initialValue the initial value for the text field (can be null)
+         */
         public DialogField(String label, String initialValue){
             this.label = label;
             this.initialValue = initialValue !=null ? initialValue: "";
             this.textField = new TextField(this.initialValue);
         }
-
+        
+        /**
+         * Returns
+         * @return the label of the dialog field
+         * @return the text field
+         * @return the trimmed text from the text field
+         */
         public String getLabel(){return label; }
         public TextField getTextField(){return textField; }
         public String getValue(){return textField.getText().trim(); }
+        /**
+         * Sets the value of the text field 
+         * @param value the value to set in the text field
+         */
         public void setValue(String value){textField.setText(value);}
+        //Focuses on the text field and selects all its text
         public void focus(){
             textField.selectAll();
             textField.requestFocus();
@@ -53,6 +69,11 @@ public class DialogUtils {
         private TextArea textArea;
         private String initialValue;
 
+        /**
+         * Creates a new TextAreaField with the specified label and initial value
+         * @param label the label for the text area field
+         * @param initialValue the initial value for the text area (can be null)
+         */
         public TextAreaField(String label, String initialValue){
             this.label = label;
             this.initialValue = initialValue != null ? initialValue : "";
@@ -62,9 +83,19 @@ public class DialogUtils {
             this.textArea.setWrapText(true);
         }
 
+        /**
+         * Returns
+         * @return the label of the text area field
+         * @return the text area
+         * @return the trimmed text from the text area
+         */
         public String getLabel(){ return label; }
         public TextArea getTextArea(){ return textArea; }
         public String getValue(){ return textArea.getText().trim(); }
+        /**
+         * Sets the value of the text area
+         * @param value the value to set in the text area
+         */
         public void setValue(String value){ textArea.setText(value); }
         public void focus(){
             textArea.selectAll();
@@ -72,7 +103,13 @@ public class DialogUtils {
         }
     }
 
-    //Creates a generic edit dialog window with custom validation
+    /**
+     * Creates a generic edit dialog window with custom validation
+     * @param title the title of the dialog window
+     * @param fields the list of the dialog fields to be displayed
+     * @param onSave the action to perform on saving the fields
+     * @param validator the custom validation function (can return an error message)
+     */
     public static void showEditDialog(String title, List<DialogField> fields, 
                                      Consumer<List<DialogField>> onSave,
                                      java.util.function.Function<List<DialogField>, String> validator) {
@@ -130,7 +167,12 @@ public class DialogUtils {
         dialogStage.showAndWait();
     }
     
-    //To show a dialog window with TextArea
+    /**
+     * Shows a dialog window containing a TextArea for user input
+     * @param title the title of the window
+     * @param textAreaField the TextAreaField object containing the label and text
+     * @param additionalButtons optional additional buttons to add to the dialog
+     */
     public static void showTextAreaDialog(String title, TextAreaField textAreaField,
                                          Button... additionalButtons) {
         //Create a new dialog window
@@ -183,7 +225,12 @@ public class DialogUtils {
         dialogStage.showAndWait();
     }
     
-    //Shows a delete confirmation window
+    /**
+     * Shows a delete confirmation window
+     * @param title the title of the confirmation dialog
+     * @param message the message to display in the confirmation dialog
+     * @param onConfirm the action to perform if the user confirms the deletion
+     */
     public static void showDeleteConfirmation(String title, String message, Runnable onConfirm) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation de suppression");
@@ -201,7 +248,14 @@ public class DialogUtils {
         });
     }
 
-    //Creates an action button for a table
+    /**
+     * Creates a table column that contains action buttons for each row
+     * @param <T> the type of the item in the table
+     * @param columnTitle the title of the column
+     * @param buttonText the text displayed on the action button
+     * @param onAction the action to perform when the button is clicked
+     * @return a TableColumn configured with action buttons
+     */
     public static <T> TableColumn<T, Void> createActionColumn(String columnTitle, String buttonText, 
                                                              Consumer<T> onAction) {
         TableColumn<T, Void> column = new TableColumn<>(columnTitle);
@@ -219,6 +273,11 @@ public class DialogUtils {
                 }
                 
                 @Override
+                /**
+                 * Updates the display of the cell based on the item's state
+                 * @param item the item represented by this cell
+                 * @param empty true if the cell is empty; false otherwise
+                 */
                 protected void updateItem(Void item, boolean empty) {
                     super.updateItem(item, empty);
                     if (empty) {
@@ -234,7 +293,11 @@ public class DialogUtils {
         return column;
     }
 
-    //Sets up sorting columns for a table
+    /**
+     * Sets up sorting for the columns of the TableView
+     * @param table The tableView to configure for sorting
+     * @param onSortChange action to perform when the sort order changes
+     */
     public static void setupColumnSorting(TableView<?> table, Runnable onSortChange) {
         // Enable sorting for all columns except action columns
         table.getColumns().forEach(column -> {
