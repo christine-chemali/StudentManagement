@@ -13,62 +13,98 @@ public class SearchCriteria {
         this.searchValue = "";
     }
     
-    //Constructor with search value
+    /**
+     * Constructs SearchCriteria with a specified search value
+     * @param searchValue the value to search for
+     */
     public SearchCriteria(String searchValue){
         this.searchValue = searchValue != null ? searchValue : "";
     }
     
-    //Gets the search value
+    /**
+     * Gets the current search value
+     * @return the search value
+     */
     public String getSearchValue(){
         return searchValue;
     }
     
-    //Sets the search value
+    /**
+     * Sets the search value
+     * @param searchValue the value to search for
+     */
     public void setSearchValue(String searchValue){
         this.searchValue = searchValue != null ? searchValue : "";
     }
     
-    //Gets the page number
+    /**
+     * Gets the current page number
+     * @return the page number
+     */
     public int getPageNumber(){
         return pageNumber;
     }
     
-    //Sets the page number
+    /**
+     * Sets the current page number
+     * @param pageNumber
+     */
     public void setPageNumber(int pageNumber){
         this.pageNumber = Math.max(1, pageNumber);
     }
     
-    //Gets the page size
+    /**
+     * Gets the number of items per page
+     * @return the page size
+     */
     public int getPageSize(){
         return pageSize;
     }
     
-    //Sets the page size
+    /**
+     * Sets the number of items per page
+     * @param pageSize the page size to set
+     */
     public void setPageSize(int pageSize){
         this.pageSize = Math.max(1, pageSize);
     }
     
-    //Gets the sort field
+    /**
+     * Gets teh field used for sorting
+     * @return the sort field
+     */
     public String getSortField(){
         return sortField;
     }
     
-    //Sets the sort field
+    /**
+     * Sets the field used for sorting
+     * @param sortField sortField the field to sort by
+     */
     public void setSortField(String sortField){
         this.sortField = sortField;
     }
     
-    //Gets the sort direction
+    /**
+     * Gets the direction of sorting (ascending or descending)
+     * @return the sort direction 
+     */
     public String getSortDirection(){
         return sortDirection;
     }
     
-    //Sets the sort direction
+    /**
+     * Sets the direction of sorting
+     * @param sortDirection the sort direction to set
+     */
     public void setSortDirection(String sortDirection){
         this.sortDirection = sortDirection;
     }
     
-    //Calculates the offset for database queries
+    /**
+     * Calculates the offset for paginated database queries
+     * @return the offset value
+     */
     public int getOffset(){
         return (pageNumber - 1) * pageSize;
     }
@@ -86,8 +122,12 @@ public class SearchCriteria {
                 '}';
     }
     
-    //Equals method for comparison
     @Override
+    /**
+     * Checks for equality with another object
+     * @param obj the object to compare with
+     * @return true if equal, false otherwise
+     */
     public boolean equals(Object obj){
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
@@ -101,8 +141,11 @@ public class SearchCriteria {
         return sortDirection != null ? sortDirection.equals(that.sortDirection) : that.sortDirection == null;
     }
     
-    //Hash code method
     @Override
+    /**
+     * Generates a hash code for the SearchCriteria
+     * @return the hash code
+     */
     public int hashCode(){
         int result = searchValue != null ? searchValue.hashCode() : 0;
         result = 31 * result + pageNumber;
