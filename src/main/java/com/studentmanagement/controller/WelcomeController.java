@@ -19,11 +19,19 @@ public class WelcomeController implements Initializable{
     public void initialize(URL location, ResourceBundle resources){
     }
     
+    /**
+     * Sets the current user and updates the UI to reflect the user's information
+     * @param user the user object representing the current user
+     */
     public void setCurrentUser(User user){
         this.currentUser = user;
         updateUI();
     }
     
+    /**
+     * Updates the UI components based on the current user's information
+     * If the current user is not set, displays a default message
+     */
     private void updateUI(){
         if (currentUser != null){
             usernameLabel.setText(currentUser.getUsername());
