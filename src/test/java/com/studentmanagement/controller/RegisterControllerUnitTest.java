@@ -48,6 +48,10 @@ public class RegisterControllerUnitTest {
     private Button buttonBackToLoginMock;
 
     @BeforeEach
+    /**
+     * Sets up the testing environement before each test case
+     * @throws Exception if an error occurs during setup
+     */
     public void setUp() throws Exception{
         //Create controller with mocked AuthenticationService
         registerController = new RegisterController();
@@ -68,6 +72,10 @@ public class RegisterControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the registration button is clicked with empty fields
+     * @throws Exception if an error occurs during the test
+     */
     public void testHandleRegisterWithEmptyFields() throws Exception{
         try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
             //Setup mock behavior for empty fields
@@ -86,6 +94,10 @@ public class RegisterControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the password and confirm password fields do not match
+     * @throws Exception if an error occurs during the test
+     */
     public void testHandleRegisterWithPasswordMismatch() throws Exception{
         try(MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
             //Setup mock behavior for password mismatch
@@ -109,6 +121,10 @@ public class RegisterControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the password is missing an uppercase letter
+     * @throws Exception if an error occurs during the test
+     */
     public void testPasswordValidationMissingUppercase() throws Exception{
         try(MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
             //Setup mock behavior for password missing uppercase
@@ -127,6 +143,10 @@ public class RegisterControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the password is missing a lowercase letter
+     * @throws Exception if an error occurs during the test
+     */
     public void testPasswordValidationMissingLowercase() throws Exception{
         try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
             // Setup mock behavior for password missing lowercase
@@ -145,6 +165,10 @@ public class RegisterControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the password is missing a special character
+     * @throws Exception if an error occurs during the test
+     */
     public void testPasswordValidationMissingSpecialChar() throws Exception{
         try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
             //Setup mock behavior for password missing special character
@@ -163,6 +187,10 @@ public class RegisterControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the password is too short
+     * @throws Exception if an error occurs during the test
+     */
     public void testPasswordValidationTooShort() throws Exception{
         try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
             //Setup mock behavior for password that's too short
@@ -181,6 +209,10 @@ public class RegisterControllerUnitTest {
     }
     
     @Test
+    /**
+     * Tests the navigation back to the login page 
+     * @throws Exception if an error occurs during the test
+     */
     public void testHandleBackToLogin() throws Exception{
         try (MockedStatic<SceneUtils> sceneUtilsMock = mockStatic(SceneUtils.class);
             MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
@@ -216,6 +248,10 @@ public class RegisterControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the scenario where an exception occurs while navigating back to the login page
+     * @throws Exception if an error occurs during the test
+     */
     public void testHandleBackToLoginWithException() throws Exception{
         try (MockedStatic<SceneUtils> sceneUtilsMock = mockStatic(SceneUtils.class);
             MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
@@ -240,6 +276,10 @@ public class RegisterControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the clearing of the form fields
+     * @throws Exception if an error occurs during the test
+     */
     public void testClearForm() throws Exception{
         //Call clearForm using reflection
         Method clearFormMethod = RegisterController.class.getDeclaredMethod("clearForm");
@@ -253,6 +293,13 @@ public class RegisterControllerUnitTest {
 
 
     //Helper method to inject mock objects into private fields
+    /**
+     * Injects a value into a private field of the specified target object
+     * @param target the object containing the field to inject into
+     * @param fieldName the name of the field to inject into
+     * @param value the value to inject into the field
+     * @throws Exception if an error occurs during reflection
+     */
     private void injectField(Object target, String fieldName, Object value) throws Exception{
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
