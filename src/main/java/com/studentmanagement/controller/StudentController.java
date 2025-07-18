@@ -253,6 +253,11 @@ public class StudentController extends BaseTableController<SubjectResult>  {
             }
             
             //Method to calculate container height
+            /**
+             * 
+             * @param container
+             * @return
+             */
             private double calculateContainerHeight(VBox container){
                 double height = 6; //padding
                 for (javafx.scene.Node child : container.getChildren()){
@@ -482,6 +487,11 @@ public class StudentController extends BaseTableController<SubjectResult>  {
         }
     }
 
+    /**
+     * Display a dialog to edit a specific grade for a subject
+     * @param subject the subject for which the grade is edited
+     * @param gradeText the current grade value in string format
+     */
     private void showGradeEditDialog(String subject, String gradeText) {
         try{
             //Parse grade value and coefficient from the grade text
@@ -542,6 +552,11 @@ public class StudentController extends BaseTableController<SubjectResult>  {
         }
     }
 
+    /**
+     * Displays a confirmation dialog for deleting a specific grade
+     * @param subject the subject from wich the grade will be deleted
+     * @param gradeText the current grade value in string format
+     */
     private void showGradeDeleteConfirmation(String subject, String gradeText) {
         try{
             //Parse grade value and coefficient from the grade text
@@ -571,6 +586,11 @@ public class StudentController extends BaseTableController<SubjectResult>  {
         }
     }
 
+    /**
+     * Displays a dialog for editing a specific comment for a subject
+     * @param subject the subject for which the comment is edited
+     * @param comment the current comment text
+     */
     private void showCommentEditDialog(String subject, String comment){
         try{
             //Create the text field
@@ -614,6 +634,10 @@ public class StudentController extends BaseTableController<SubjectResult>  {
         }
     }
 
+    /**
+     * Displays a confirmation dialog for deleting a specific comment
+     * @param subject the subject from which the comment will be deleted
+     */
     private void showCommentDeleteConfirmation(String subject){
         try{
             // Show confirmation dialog
@@ -638,7 +662,10 @@ public class StudentController extends BaseTableController<SubjectResult>  {
         }
     }
 
-    //Disable all ui fields buttons and text area until user enter student ID
+    /**
+     * Enables or disables grade input controls based on the provided flag
+     * @param disable true to disable controls, false to enable
+     */
     private void disableGradeControls(boolean disable){
         subjectComboBox.setDisable(disable);
         gradeField.setDisable(disable);
@@ -699,15 +726,26 @@ public class StudentController extends BaseTableController<SubjectResult>  {
         AlertUtils.showInformation("Information", "L'importation n'est pas disponible pour les notes d'étudiant.");
     }
 
-    //Setters for dependency injection
+    /**
+     * Sets the StudentService to be used by this controller
+     * @param studentService the StudentService instance
+     */
     public void setStudentService(StudentService studentService){
         this.studentService = studentService;
     }
 
+    /**
+     * Sets the GradeService to be used by this controller
+     * @param gradeService the GradeService instance
+     */
     public void setGradeService(GradeService gradeService){
         this.gradeService = gradeService;
     }
 
+    /**
+     * Sets the SubjectCommentService to be used by this controller
+     * @param commentService the SubjectCommentService instance
+     */
     public void setCommentService(SubjectCommentService commentService) {
         this.commentService = commentService;
     }
