@@ -2617,6 +2617,78 @@ The `Backup` table maintains a record of backup operations, including the type o
 +----------------------------------------------------------------------+
 ```
 
+## ER Diagram 
+
+```mermaid
+erDiagram
+    User {
+        BIGSERIAL id PK
+        VARCHAR(255) username UK "NOT NULL UNIQUE"
+        TEXT password_hash "NOT NULL"
+        VARCHAR(50) role "DEFAULT 'USER'"
+        BOOLEAN is_active "DEFAULT TRUE"
+    }
+    
+    Classe {
+        BIGSERIAL id PK
+        VARCHAR(5) class_name UK "NOT NULL UNIQUE"
+    }
+    
+    Student {
+        BIGSERIAL id PK
+        VARCHAR(50) first_name "NOT NULL"
+        VARCHAR(50) last_name "NOT NULL"
+        INTEGER age "CHECK (age > 0 AND age < 150)"
+        BIGINT class_id FK "REFERENCES Class(id)"
+        TIMESTAMP created_at "DEFAULT CURRENT_TIMESTAMP"
+        TIMESTAMP updated_at "DEFAULT CURRENT_TIMESTAMP"
+        BOOLEAN is_active "DEFAULT TRUE"
+    }
+    
+    Subject {
+        BIGSERIAL id PK
+        VARCHAR(50) name UK "NOT NULL UNIQUE"
+        DECIMAL coefficient "DEFAULT 1.0"
+        TIMESTAMP created_at "DEFAULT CURRENT_TIMESTAMP"
+    }
+    
+    Grade {
+        BIGSERIAL id PK
+        BIGINT student_id FK "REFERENCES Student(id)"
+        BIGINT subject_id FK "REFERENCES Subject(id)"
+        DECIMAL grade "CHECK (grade >= 0 AND grade <= 20)"
+        DATE date_recorded "DEFAULT CURRENT_DATE"
+        DECIMAL grade_coefficient "DEFAULT 1.0 CHECK (coefficient > 0)"
+        TIMESTAMP created_at "DEFAULT CURRENT_TIMESTAMP"
+        TIMESTAMP updated_at "DEFAULT CURRENT_TIMESTAMP"
+    }
+    
+    SubjectComment {
+        BIGSERIAL id PK
+        BIGINT student_id FK "REFERENCES Student(id)"
+        BIGINT subject_id FK "REFERENCES Subject(id)"
+        TEXT comment "NOT NULL"
+        TIMESTAMP created_at "DEFAULT CURRENT_TIMESTAMP"
+    }
+    
+    Backup {
+        BIGSERIAL id PK
+        VARCHAR(50) backup_type "CHECK IN ('AUTO', 'MANUAL')"
+        VARCHAR(255) file_path "NOT NULL"
+        BIGINT file_size
+        VARCHAR(50) status "DEFAULT 'SUCCESS' CHECK IN ('SUCCESS', 'FAILED', 'IN_PROGRESS')"
+        TEXT error_message
+        TIMESTAMP created_at "DEFAULT CURRENT_TIMESTAMP"
+    }
+    
+    %% Relations
+    Classe ||--o{ Student : "has"
+    Student ||--o{ Grade : "receives"
+    Subject ||--o{ Grade : "graded_in"
+    Student ||--o{ SubjectComment : "receives_comment"
+    Subject ||--o{ SubjectComment : "commented_on"
+```
+
 ## User Stories - ÉDUSYS
 
 ### Authentication & Access
