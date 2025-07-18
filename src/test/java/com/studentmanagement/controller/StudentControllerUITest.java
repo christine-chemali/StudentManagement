@@ -96,6 +96,11 @@ public class StudentControllerUITest {
             }
     
     @Start
+    /**
+     * Initializes the test environement by loading the FXML and setting up the controller
+     * @param stage the primary stage for this application
+     * @throws Exception if an error occurs while loading the FXML
+     */
     public void start(Stage stage) throws Exception{
         //Load FXML
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/student.fxml"));
@@ -115,6 +120,10 @@ public class StudentControllerUITest {
     }
 
     @BeforeEach
+    /**
+     * Sets up the testing environement before each test case
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void setUp(FxRobot robot) {
         setupMockData();
         
@@ -197,11 +206,19 @@ public class StudentControllerUITest {
     }
     
     @AfterEach
+    /**
+     * Cleans up the testing environement after each test case
+     * @throws Exception if an error occurs during cleanup
+     */
     public void tearDown() throws Exception{
         FxToolkit.cleanupStages();
     }
 
     @Test
+    /**
+     * Tests the initial state of the UI components
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testInitialState(FxRobot robot){
         //Verify that controls are disabled initially
         assertThat(subjectComboBox.isDisabled()).isTrue();
@@ -214,6 +231,10 @@ public class StudentControllerUITest {
     }
 
      @Test
+     /**
+      * Tests the succesful loading of a student
+      * @param robot the FxRobot instance used for simulating user input
+      */
     public void testSuccessfulStudentLoad(FxRobot robot){
         //Load a valid student
         robot.clickOn(studentIdField).write("1");
@@ -236,6 +257,10 @@ public class StudentControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where an invalid student ID is entered
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testInvalidStudentId(FxRobot robot){
         //Try to load non existent student
         robot.clickOn(studentIdField).write("999");
@@ -256,6 +281,10 @@ public class StudentControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the student ID field is empty
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testEmptyStudentId(FxRobot robot){
         //Try to load without entering student ID
         robot.clickOn("#okButton");  
@@ -272,6 +301,10 @@ public class StudentControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where an invalid student ID format is entered
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testInvalidStudentIdFormat(FxRobot robot){
         //Try to load with invalid format
         robot.clickOn(studentIdField).write("abc");
@@ -289,6 +322,10 @@ public class StudentControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the successful addition of a grade
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testAddGradeSuccess(FxRobot robot){
         //Activate logging
         System.out.println("Début du test testAddGradeSuccess");
@@ -375,6 +412,10 @@ public class StudentControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where an invalid grade format is entered
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testAddGradeInvalidFormat(FxRobot robot){
         System.out.println("Début du test testAddGradeInvalidFormat");
         try{
@@ -432,6 +473,10 @@ public class StudentControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where a grade out of range is entered
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testAddGradeOutOfRange(FxRobot robot){
         System.out.println("Début du test testGradeOutOfRange");
         try{
@@ -489,6 +534,10 @@ public class StudentControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where a grade is added without selecting a subject
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testAddGradeWithoutSubject(FxRobot robot){
         System.out.println("Début du test testAddGradeWithoutSubject");
         try{
@@ -546,7 +595,9 @@ public class StudentControllerUITest {
         }
     }
 
-    //Method to set up an automatic dialog handler
+    /**
+     * Sets up a handler for dialog boxes to automatically respond to alerts
+     */
     private void setupAutomaticDialogHandler(){
         //Set up a handler for dialog boxes
         Thread dialogWatcherThread = new Thread(() ->{
@@ -586,7 +637,10 @@ public class StudentControllerUITest {
         dialogWatcherThread.start();
     }
 
-    //Method to find the top modal window
+    /**
+     * Retrieves the topmost modal stage in the application
+     * @return the top modal stage or null if none found
+     */
     private Stage getTopModalStage(){
         //Retrieve all windows
         for (Window window : Stage.getWindows()){
@@ -601,7 +655,12 @@ public class StudentControllerUITest {
         return null;
     }
 
-    //Method to find a button in a dialog
+    /**
+     * Finds a button in a dialog window by its text
+     * @param dialogStage the dialog stage to search in
+     * @param buttonText the text of the button to find
+     * @return the found button or null if not found
+     */
     private Button findButtonInDialog(Stage dialogStage, String buttonText){
         //Traverse all nodes in the scene to find a button
         Scene scene = dialogStage.getScene();
@@ -611,7 +670,12 @@ public class StudentControllerUITest {
         return null;
     }
 
-    //Recursive method to find a button in a node
+    /**
+     * Recursively searches for a button in a node and its children
+     * @param node the node to search in
+     * @param buttonText the text of the button to find
+     * @return the found button or null if not found
+     */
     private Button findButtonInNode(Node node, String buttonText){
         if (node instanceof Button){
             Button button = (Button) node;
@@ -622,7 +686,10 @@ public class StudentControllerUITest {
         return null;
     }
 
-    //Helper method to load a valid student
+    /**
+     * Loads a valid student into the form using the provided robot
+     * @param robot the FxRobot instance used for simulating user input
+     */
     private void loadValidStudent(FxRobot robot){
         TextField idField = robot.lookup("#studentIdField").queryAs(TextField.class);
         robot.interact(() -> {
@@ -638,6 +705,10 @@ public class StudentControllerUITest {
     }
         
     @Test
+    /**
+     * Tests the functionnality of checkboxes showing buttons for modifying or deleting grades
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testCheckboxShowsButtons(FxRobot robot){
         System.out.println("Début du test testCheckboxShowsButtons");
         try{
