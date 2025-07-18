@@ -25,6 +25,121 @@ This project is a student management system developed in Java with a PostgreSQL 
 - **Automatic Backup**: Protection against data loss
 - **Undo operations**: Undo/redo functionality for CRUD actions
 
+### Advance Feature hilight: Table Sorting Functionality
+
+#### Overview
+The application provides intuitive table sorting capabilities across all data views, allowing users to organize information efficiently with persistent sorting across pagination.
+
+#### How It Works
+
+##### Column Header Interaction
+Users can sort data by **clicking on column headers** in any table view:
+
+- **First click**: Sorts in ascending order (A→Z, 1→9) with ↑ indicator
+- **Second click**: Sorts in descending order (Z→A, 9→1) with ↓ indicator  
+- **Third click**: Returns to default order (no indicator)
+
+##### Available Sorting Options
+
+###### Student Management Table
+```
++-------------------+------------------------------------------+
+| Column            | Sort Behavior                            |
+|-------------------|------------------------------------------|
+| **ID**            | Numerical order (student IDs)            |
+| **First Name**    | Alphabetical order                       |
+| **Last Name**     | Alphabetical order                       |
+| **Age**           | Numerical order (youngest to oldest)     |
+| **Class**         | Alphanumerical order (6A, 6B, 5A, etc.)  |
+| **Average Grade** | Numerical order (performance ranking)    |
++-------------------+------------------------------------------+
+```
+
+###### Grade Management Table
+```
++---------------------+------------------------------------------+
+| Column              | Sort Behavior                            |
+|---------------------|------------------------------------------|
+| **Subject**         | Alphabetical order                       |
+| **Min Average**     | Numerical order (class performance)      |
+| **Max Average**     | Numerical order (class performance)      |
+| **Student Average** | Numerical order (individual performance) |
++---------------------+------------------------------------------+
+
+```
+
+###### Persistent Sorting
+- **Cross-page persistence**: Sorting order is maintained when navigating between pages
+- **Session continuity**: Selected sort remains active throughout the user session
+- **Search compatibility**: Sorting works seamlessly with search filters
+
+##### Use Cases
+
+###### Academic Performance Analysis
+
+1. Click "Average Grade" header → View top/bottom performers
+2. Navigate through pages → Ranking order preserved
+3. Identify students needing support or recognition
+
+
+###### Class Management
+
+1. Click "Class" header → Group students by grade level
+2. Browse pages → Class grouping maintained
+3. Facilitate grade-level specific operations
+
+
+##### Subject Performance Review
+
+1. Click "Student Average" in grades view → See strengths/weaknesses
+2. Navigate subjects → Performance ranking preserved
+3. Quick identification of problem areas
+
+
+##### Technical Implementation
+
+##### SearchCriteria Enhancement
+The sorting functionality is powered by extended `SearchCriteria` class:
+
+```java
+// Core sorting properties
+private String sortField;
+private String sortDirection;
+
+// Accessor methods
+public String getSortField()
+public void setSortField(String sortField)
+public String getSortDirection()
+public void setSortDirection(String sortDirection)
+```
+
+##### Controller Integration
+Controllers automatically capture and preserve sorting preferences:
+
+```java
+// Capture user sort selection
+String sortField = sortColumn.getId().replace("Column", "");
+String sortDirection = sortColumn.getSortType().toString();
+criteria.setSortField(sortField);
+criteria.setSortDirection(sortDirection);
+```
+
+##### User Benefits
+
+- **Improved Efficiency**: No need to re-sort after each page change
+- **Better Data Analysis**: Quick identification of patterns and trends
+- **Intuitive Interface**: Standard sorting behavior expected in modern applications
+- **Enhanced Navigation**: Seamless data exploration with maintained context
+
+##### Visual Indicators
+
+The interface provides clear visual feedback:
+- **↑ Arrow**: Ascending sort active
+- **↓ Arrow**: Descending sort active
+- **No Arrow**: Default/natural order
+
+This sorting system significantly enhances the user experience by providing efficient data organization tools that work consistently across all application views.
+
 ## Project Architecture
 This application follows a classic layered architecture with the MVC (Model-View-Controller) pattern.
 Here are the main layers:
@@ -34,6 +149,7 @@ Here are the main layers:
 Classes that represent business entities, and contains attributes, constructors, getters/setters, and utility methods.
 
 - **Student.java**:
+
     - `Student()`-> Default constructor  
     - `Student()` -> Constructor with basic parameters  
     - `getStudentId()` -> Returns the student's ID  
@@ -43,7 +159,7 @@ Classes that represent business entities, and contains attributes, constructors,
     - `setLastName()` -> Sets the student's last name  
     - `getAge()` -> Returns the student's age  
     - `setAge()` -> Sets the student's age  
-    - `getAverageGrade()` -> Returns the student's average grade
+     - `getAverageGrade()` -> Returns the student's average grade
     - `setAverageGrade()` -> Sets the student's average grade
     - `getFullName()` -> Returns the full name (first name - last name) 
     - `getStudentClassName()` -> Returns the class name
@@ -79,6 +195,7 @@ Classes that represent business entities, and contains attributes, constructors,
 ```
 
 - **Grade.java**: 
+
     - `Grade()`-> Default constructor  
     - `Grade()` -> Constructor with student ID, school subject, grade value
     - `getGradeId()` -> Returns the unique grade ID
@@ -125,6 +242,7 @@ Classes that represent business entities, and contains attributes, constructors,
 ```
 
 - **SubjectComment.java**:
+
     - `getId()` -> Returns unique comment ID
     - `getStudentId()` -> Returns student ID
     - `getSubject()` -> Returns school subject
@@ -150,6 +268,7 @@ Classes that represent business entities, and contains attributes, constructors,
 ```
 
 - **User.java**: 
+
     - `User()` -> Default constructor  
     - `User()` -> Constructor with username and password
     - `getUserId()` -> Returns the unique Id of the user
@@ -231,6 +350,7 @@ public abstract class BaseDAO<T> {
 > When creating a new DAO for a specific entity (like User or Product), extend the `BaseDAO` class and implement the `mapResultSet` method to define the conversion from `ResultSet` to the desired entity. This structure ensures consistent and efficient data access across the application.
 
 - **StudentDAO.java**: interface
+
     - `save()` -> Save a student to the database
     - `findStudentById()` -> Finds a student by their unique ID
     - `findAllStudent()` -> Retrieves all students from the database
@@ -286,6 +406,7 @@ public abstract class BaseDAO<T> {
 +-------------------------------------------------+
 ```
 - **StudentDAOImpl.java**: `extends BaseDAO<Student>`
+
     - `StudentDAOImpl(Connection)` -> Constructor with connection injection
     - `saveStudent()` -> Implements student saving to database
     - `findStudentById()` -> Implements finding students by ID
@@ -294,7 +415,7 @@ public abstract class BaseDAO<T> {
     - `deleteStudent()` -> Implements student deletion by ID
     - `searchGeneral()` -> Implement general search across all fields with pagination
     - `countSearchGeneral()` -> Implements counts the results of the general search
-    - `mapResultSetTo(ResultSet)` -> Convert database ResultSet to Student object
+    - `mapResultSetTo()` -> Convert database ResultSet to Student object
 
 SQL requests example:
 
@@ -341,6 +462,7 @@ Snipset example in StudentDAOImpl:
     }
 ```
 - **GradeDAO.java**: interface
+
     - `saveGrade()` -> Saves a grade to the database
     - `updateGrade()` -> Updates an existing grade by its ID
     - `deleteGrade()` -> Delete an existing gade by its ID
@@ -397,6 +519,7 @@ Snipset example in StudentDAOImpl:
 ```
 
 - **GradeDAOImpl.java**: `extends BaseDAO<Grade>`
+
     - `GradeDAOImpl(Connection)` -> Constructor with connection injection
     - `saveGrade()` -> Implements grade saving to database
     - `updateGrade()` -> Implements grade updating by ID
@@ -405,7 +528,7 @@ Snipset example in StudentDAOImpl:
     - `updateCoefficient()` -> Implements coefficient updating
     - `searchBySubject()` -> Complex request with GROUP BY to returns all the info in one request (subject - grades - min average grade, max average grade, student average, comment)
     - `countBySubject()` ->  Implements subject count
-    - `mapResultSet(ResultSet)` -> Convert database ResultSet to Grade
+    - `mapResultSet()` -> Convert database ResultSet to Grade
 
 ```sql
 -- Example of countBySubject() request
@@ -432,6 +555,7 @@ LIMIT ? OFFSET ?
 ```
 
 - **SubjectCommentDAO.java**:  interface 
+
     - `saveComment()` -> Saves a comment for a subject
     - `updateComment()` -> Updates an existing comment
     - `deleteComment()` -> Deletes a comment
@@ -471,14 +595,16 @@ LIMIT ? OFFSET ?
  ```   
 
 - **SubjectCommentDAOImpl.java**: `extends BaseDAO<SubjectComment>`
+
     - `SubjectCommentDAOImpl(Connection)` -> Constructor with connection injection
     - `saveComment()` -> Implements comment saving to database
     - `updateComment()` -> Implements comment updating
     - `deleteComment()` -> Implements comment deletion
     - `findCommentsByStudentAndSubject()` -> Implements finding comments by student and subject
-    - `mapResultSet(ResultSet)` -> Convert database ResultSet to SubjectComment
+    - `mapResultSet()` -> Convert database ResultSet to SubjectComment
 
 - **UserDAO.java**: interface
+
     - `saveUser()` -> Saves a user to the database 
     - `findUserByUsername ()` -> Finds a user by username
     - `authenticateUser()` -> Checks if username/password combination is valid
@@ -513,16 +639,18 @@ LIMIT ? OFFSET ?
 +-------------------------------------------------+
 ```
 - **UserDAOImpl.java**:  `extends BaseDAO<User>`
+
     - `UserDAOImpl(Connection)` -> Constructor with connection injection
     - `saveUser()` -> Implements user saving to database
     - `findUserByUsername` -> Implements findinf user by username
     - `authenticateUser()` -> Implements login authentication
-    - `mapResultSet(ResultSet)` -> Convert database ResultSet to User
+    - `mapResultSet()` -> Convert database ResultSet to User
 
 ### 3. **Database**
 * * *
 
  - **DatabaseConnection.java**:
+
     - `url` -> Database UrL string
     - `username` -> Database username
     - `password` -> Database password
@@ -585,6 +713,7 @@ LIMIT ? OFFSET ?
 The Service layer contains business logic and orchestrates calls to the DAOs
 
 - **StudentService.java**:
+
     - `studentDAO` -> StudentDAO instance
     - `validator` -> InputValidator instance
     - `StudentService()` -> Constructor with DAO injection
@@ -594,6 +723,7 @@ The Service layer contains business logic and orchestrates calls to the DAOs
     - `updateStudent()` -> Updates existing student
     - `deleteStudent()` -> Deletes student by ID
     - `searchStudents()`  -> Returns paginated student list - use StudentDAO.searchGeneral() with SearchCriteria and pagination
+
 ```
 +-------------------------------------------------+
 |                  StudentService                 |
@@ -611,6 +741,7 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 +-------------------------------------------------+
 ```
 - **GradeService.java**:
+
     - `gradeDAO` -> GradeDAO instance
     - `GradeService()` -> Constructeur
     - `searchBySubject()` -> Use GradeDAO.searchBySubject() with SearchCriteria and pagination
@@ -627,9 +758,10 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 ```
 
 - **StatisticsService.java**:
+
     - `studentDAO` -> StudentDAO instance
     - `gradeDAO` -> GradeDAO instance
-    - `StatisticsService(StudentDAO, GradeDAO)` -> Constructor with DAO injection
+    - `StatisticsService()` -> Constructor with DAO injection
     - `calculateClassAverageBySubject()` -> Calculates class average by subject
     - `getStudentCountByAgeGroup()` -> Returns student count by age group
     - `getGradeDistributionBySubject()` -> Returns grade distribution ranges by subject
@@ -655,6 +787,7 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 +--------------------------------------------------------------------+
 ```
 - **AuthenticationService.java**:
+
     - `userDAO` -> UserDAO instance
     - `currentUser` -> Current logged-in user
     - `AuthenticationService()` -> Constructor with UserDAO injection
@@ -677,6 +810,7 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 ```
 
 - **ImportExportService.java**:
+
     - `csvHandler` -> CSV file handler
     - `pdfExporter` -> PDF file exporter
     - `ImportExportService()` -> Default constructor
@@ -695,6 +829,7 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 +-------------------------------------------------+
 ```
 - **BackupService.java**:
+
     - `databaseConnection` -> Database connection instance
     - `BackupService(DatabaseConnection)` -> Constructor with connection injection
     - `createBackup()` -> Creates complete system backup
@@ -725,48 +860,86 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 ### 5. **Controller Layer** 
 * * *
 
-- **MainController.java**:
-    - `studentService` -> StudentService instance
-    - `authService` -> AuthenticationService instance
-    - `currentStage` -> Stage instance
-    - `currentUser` -> User instance
-    - `initialize()` -> Initializes the main controller
-    - `showGeneralManagement()` -> Displays General management view
-    - `showStudentManagement()` -> Displays student management view
-    - `showGeneralStatistics()` -> Displays general statistics view
-    - `showStudentStatistics()` -> Displays student statistics view
-    - `showImportExport()` -> Displays import/export pop up
-    - `showGradeModifyForm()` -> Displays grade modify delete form
-    - `showCoefficientModifyForm()` -> Displays coefficient modify delete form
-    - `showLogin()` -> Displays login view
-    - `showRegister()` -> Displays register view
-    - `loadView()` -> Dynamically loads a FXML view
+- **BaseTableController.java**:
+
+    - `searchField` -> TextField instance for search input
+    - `searchButton` -> Button for executing search
+    - `exportButton` -> Button for exporting data
+    - `importButton` -> Button for importing data
+    - `dataTable` -> TableView instance for displaying data
+    - `pagination` -> Pagination instance for navigating through data pages
+    - `importExportService` -> ImportExportService instance
+    - `ROWS_PER_PAGE` -> Constant for the number of rows per page
+    - `initialize()` -> Common initialization for all table controllers
+    - `initializeServices()` -> Initializes required services
+    - `setupTableResizing()` -> Sets up table auto-resizing
+    - `refreshTableRowHeights()` -> Forces height recalculation for table rows
+    - `autoResizeTable()` -> Automatically resizes the table
+    - `setupColumnSizing()` -> Configures column sizing (abstract)
+    - `setupPagination()` -> Sets up pagination functionality
+    - `setupSearchAndExport()` -> Sets up search and export button actions
+    - `setupImport()` -> Sets up import button action
+    - `setupColumnSorting()` -> Configures column sorting
+    - `loadInitialData()` -> Loads initial data into the table
+    - `handleSearch()` -> Handles search event and loads data
+    - `handleExport()` -> Handles CSV export functionality
+    - `loadDataPage()` -> Loads the specified page of data into the table
+    - `calculatePageCount()` -> Calculates the total number of pages
+    - `createSearchCriteria()` -> Creates search criteria based on user input
+    - `extractSortField()` -> Extracts sort field name from a column
+    - `refreshTable()` -> Refreshes the current table
+    - `refreshTableFromStart()` -> Refreshes and returns to the first page
+    - `setupTableColumns()` -> Abstract method to set up table columns (to be implemented in subclasses)
+    - `searchData()` -> Abstract method to search data based on criteria (to be implemented in subclasses)
+    - `exportToCSV()` -> Abstract method to export data to CSV (to be implemented in subclasses)
+    - `getTotalCount()` -> Abstract method to get total count of items based on criteria (to be implemented in subclasses)
+    - `handleImport()` -> Abstract method to handle import functionality (to be implemented in subclasses)
+    - `ImportExportService()` -> Sets the ImportExportService for the controller
 
 ```
-+-------------------------------------------------+
-|                MainController                   |
-+-------------------------------------------------+
-| - studentService: StudentService                |
-| - authService: AuthenticationService            |
-| - currentStage: Stage                           |
-| - currentUser: User                             |
-+-------------------------------------------------+
-| + initialize(): void                            |
-| + showGeneralManagement(): void                 |
-| + showStudentManagement(): void                 |
-| + showGeneralStatistics(): void                 |
-| + showStudentStatistics(): void                 |
-| + showImportExport(): void                      |
-| + showGradeModifyForm(): void                   |
-| + showCoefficientModifyForm(): void             |
-| + showLogin(): void                             |
-| + showRegister(): void                          |
-| + loadView(String): void                        |
-+-------------------------------------------------+
++----------------------------------------------------------------------+
+|              BaseTableController<T>                                  |
++----------------------------------------------------------------------+
+| - searchField: TextField                                             |
+| - searchButton: Button                                               |
+| - exportButton: Button                                               |
+| - importButton: Button                                               |
+| - dataTable: TableView<T>                                            |
+| - pagination: Pagination                                             |
+| - importExportService: ImportExportService                           |
+| - ROWS_PER_PAGE: int                                                 |
++----------------------------------------------------------------------+
+| - initialize(): void                                                 |
+| - initializeServices(): void                                         |
+| - setupTableResizing(): void                                         |
+| - refreshTableRowHeights(): void                                     |
+| - autoResizeTable(): void                                            |
+| - setupColumnSizing(): void                                          |
+| - setupPagination(): void                                            |
+| - setupSearchAndExport(): void                                       |
+| - setupImport(): void                                                |
+| - setupColumnSorting(): void                                         |
+| - loadInitialData(): void                                            |
+| - handleSearch(): void                                               |
+| - handleExport(): void                                               |
+| - loadDataPage(int pageIndex): void                                  |
+| - calculatePageCount(): int                                          |
+| - createSearchCriteria(): SearchCriteria                             |
+| - extractSortField(TableColumn<T, ?> column): String                 |
+| - refreshTable(): void                                               |
+| - refreshTableFromStart(): void                                      |
+| - setupTableColumns(): void (abstract)                               |
+| - searchData(SearchCriteria criteria): List<T>                       |
+| - exportToCSV(List<T> data, File file): void                         |
+| - getTotalCount(SearchCriteria criteria): int                        |
+| - handleImport(): void (abstract)                                    |
+| - ImportExportService(ImportExportService importExportService): void |
++----------------------------------------------------------------------+
 ```
 
 - **TabController.java**:
-    - `initialize(URL location, ResourceBundle resources)` -> Initializes the tab controller
+
+    - `initialize()` -> Initializes the tab controller
     - `handleButtonAction()` -> Handles button click action
 
 ```
@@ -779,6 +952,7 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 ```
 
 - **LoginController.java**:
+
     - `authService` -> AuthenticationService instance
     - `textFieldUsername` -> TextField instance
     - `textFieldPassword` -> TextField instance
@@ -810,6 +984,7 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 ```
 
 - **RegisterController.java**:
+
     - `authService` -> AuthenticationService instance
     - `textFieldUsername` -> TextField instance
     - `textFieldPassword` -> TextField instance
@@ -821,7 +996,7 @@ The Service layer contains business logic and orchestrates calls to the DAOs
     - `handleBackToLogin()` -> Handles event to return to login page
     - `showLogin()` -> Displays login view after successful registration
     - `clearForm()` -> Clears input fields in the registration form
-    - `setAuthService(AuthenticationService authService)` -> Sets the AuthenticationService instance for the controller 
+    - `setAuthService()` -> Sets the AuthenticationService instance for the controller 
 
 ```
 +-------------------------------------------------+
@@ -842,8 +1017,29 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 | + setAuthService(AuthenticationService): void   |
 +-------------------------------------------------+
 ```
+- **WelcomeController.java**:
+
+    - `usernameLabel` -> Label for displaying the username
+    - `currentUser` -> User object representing the current user
+    - `initialize()` -> Initializes the controller
+    - `setCurrentUser()` -> Sets the current user and updates the UI
+    - `updateUI()` -> Updates UI components based on the current user's information
+
+```
++------------------------------------------------------------+
+|                   WelcomeController                        |
++------------------------------------------------------------+
+| - usernameLabel: Label                                     |
+| - currentUser: User                                        |
+| - initialize(URL location, ResourceBundle resources): void |
+| - setCurrentUser(User user): void                          |
+| - updateUI(): void                                         |
++------------------------------------------------------------+
+
+```
 
 - **StudentsController.java**:
+
     - `studentService` -> StudentService instance
     - `importExportService` -> ImportExportService instance
     - `searchField` -> TextField instance for search
@@ -896,73 +1092,184 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 | + setImportExportService(ImportExportService): void   |
 +-------------------------------------------------------+
 ```
-- **StudentFormController.java**:
-    - `initialize()` -> Initializes student form
-    - `setStudent()` -> Loads student data into form
-    - `handleSaveStudent()` -> Handles student creation/update
-    - `handleCancelStudent()` -> Handles form cancel
-    - `handleDeleteStudent()` -> Handles student deletion
-    - `clearForm()` -> Clears all form fields
-    - `validateStudentForm()` -> Validates student data
+
+- **StudentsStatsController.java**:
+
+    - `ageChart` -> PieChart for displaying age distribution
+    - `noDataLabel` -> Label for displaying no data message
+    - `refreshButton` -> Button for refreshing the statistics
+    - `exportButton` -> Button for exporting the statistics
+    - `statisticsService` -> StatisticsService instance for handling statistics
+    - `initialize()` -> Initializes the controller
+    - `loadStatistics()` -> Loads statistical data and updates the chart
+    - `updateAgeDistributionChart()` -> Updates the pie chart with age distribution
+    - `handleRefresh()` -> Handles the click event for the refresh button
+    - `handleExport()` -> Handles the click event for the export button
+    - `setStatisticsService()` -> Sets the StatisticsService for the controller and loads statistics
+
 ```
-+-------------------------------------------------+
-|              StudentFormController              |
-+-------------------------------------------------+
-| + initialize(): void                            |
-| + setStudent(Student): void                     |
-| + handleSaveStudent(): void                     |
-| + handleCancelStudent(): void                   |
-| + handleDeleteStudent(): void                   |
-| + clearForm(): void                             |
-| + validateStudentForm(): boolean                |
-+-------------------------------------------------+
++-------------------------------------------------------------------+
+|                  StudentsStatsController                          |
++-------------------------------------------------------------------+
+| - ageChart: PieChart                                              |
+| - noDataLabel: Label                                              |
+| - refreshButton: Button                                           |
+| - exportButton: Button                                            |
+| - statisticsService: StatisticsService                            |
++-------------------------------------------------------------------+
+| - initialize(URL location, ResourceBundle resources): void        |
+| - loadStatistics(): void                                          |
+| - updateAgeDistributionChart(): void                              |
+| - handleRefresh(): void                                           |
+| - handleExport(): void                                            |
+| - setStatisticsService(StatisticsService statisticsService): void |
++-------------------------------------------------------------------+
+
 ```
 
-- **StatisticsController.java**:
+- **StudentController.java**:
+
+    - `studentIdField` -> TextField for the student ID
+    - `studentNameLabel` -> Label displaying the student's name
+    - `studentClassLabel` -> Label displaying the student's class
+    - `subjectComboBox` -> ComboBox for selecting the subject
+    - `gradeField` -> TextField for entering the grade
+    - `coefficientField` -> TextField for entering the coefficient
+    - `addGradeButton` -> Button to add a grade
+    - `commentArea` -> TextArea for entering comments
+    - `addCommentButton` -> Button to add a comment
+    - `okButton` -> Button for confirmation actions
+    - `searchButton` -> Button to search for grades
+    - `gradesTable` -> TableView displaying the grades
+    - `subjectColumn` -> Column for subject names
+    - `gradesColumn` -> Column for grades
+    - `minAverageColumn` -> Column for minimum class average
+    - `maxAverageColumn` -> Column for maximum class average
+    - `studentAverageColumn` -> Column for student's average
+    - `commentsColumn` -> Column for comments
+    - `studentService` -> Service for student data
+    - `gradeService` -> Service for grade data
+    - `commentService` -> Service for comment data
+    - `currentStudent` -> The currently loaded student
+    - `subjects` -> List of subjects available for selection
+    - `StudentController()` -> Constructor
     - `initialize()` -> Initializes the controller
-    - `loadStatistics()` -> Loads statistics data
-    - `updateCharts()` -> Updates all chart displays
-    - `handleRefresh()` -> Handles refresh button click
-    - `handleExport()` -> Handles export button click
-    - `createAgeDistributionChart()` -> Creates age distribution pie chart
-    - `createGradeDistributionChart()` -> Creates grade distribution bar chart
+    - `setupColumnSizing()` -> Sets up specific sizing for the table columns
+    - `setupTableColumns()` -> Configures the table columns
+    - `handleLoadStudent()` -> Loads a student based on the ID entered
+    - `handleAddGrade()` -> Adds a grade for the current student
+    - `handleAddComment()` -> Adds a comment for the current student
+    - `handleSort()` -> Handles sorting action
+    - `showGradeEditDialog()` -> Displays a dialog to edit a grade
+    - `showGradeDeleteConfirmation()` -> Displays a confirmation dialog for grade deletion
+    - `showCommentEditDialog()` -> Displays a dialog to edit a comment
+    - `showCommentDeleteConfirmation()` -> Displays a confirmation dialog for comment deletion
+    - `disableGradeControls()` -> Enables or disables grade input controls
+    - `searchData()` -> Searches data based on criteria
+    - `getTotalCount()` -> Gets the total count of records based on criteria
+    - `exportToCSV()` -> Exports data to CSV format
+    - `handleImport()` -> Handles import action (not implemented)
+    - `setStudentService()` -> Sets the StudentService instance
+    - `setGradeService()` -> Sets the GradeService instance
+    - `setCommentService()` -> Sets the SubjectCommentService instance
+
 ```
-+-------------------------------------------------+
-|                StatisticsController             |
-+-------------------------------------------------+
-| + initialize(): void                            |
-| + loadStatistics(): void                        |
-| + updateCharts(): void                          |
-| + handleRefresh(): void                         |
-| + handleExport(): void                          |
-| - createAgeDistributionChart(): void            |
-| - createGradeDistributionChart(): void          |
-+-------------------------------------------------+
++-----------------------------------------------------------+
+|              StudentController                            |
++-----------------------------------------------------------+
+| - studentIdField: TextField                               |
+| - studentNameLabel: Label                                 |
+| - studentClassLabel: Label                                |
+| - subjectComboBox: ComboBox<String>                       |
+| - gradeField: TextField                                   |
+| - coefficientField: TextField                             |
+| - addGradeButton: Button                                  |
+| - commentArea: TextArea                                   |
+| - addCommentButton: Button                                |
+| - okButton: Button                                        |
+| - searchButton: Button                                    |
+| - gradesTable: TableView<SubjectResult>                   |
+| - subjectColumn: TableColumn<SubjectResult, String>       |
+| - gradesColumn: TableColumn<SubjectResult, String>        |
+| - minAverageColumn: TableColumn<SubjectResult, Number>    |
+| - maxAverageColumn: TableColumn<SubjectResult, Number>    |
+| - studentAverageColumn: TableColumn<SubjectResult, Number>|
+| - commentsColumn: TableColumn<SubjectResult, String>      |
+| - studentService: StudentService                          |
+| - gradeService: GradeService                              |
+| - commentService: SubjectCommentService                   |
+| - currentStudent: Student                                 |
+| - subjects: List<String>                                  |
++-----------------------------------------------------------+
+| + initialize(): void                                      |
+| - setupColumnSizing(): void                               |
+| - setupTableColumns(): void                               |
+| + handleLoadStudent(): void                               |
+| + handleAddGrade(): void                                  |
+| + handleAddComment(): void                                |
+| + handleSort(): void                                      |
+| - showGradeEditDialog(String, String): void               |
+| - showGradeDeleteConfirmation(String, String): void       |
+| - showCommentEditDialog(String, String): void             |
+| - showCommentDeleteConfirmation(String): void             |
+| - disableGradeControls(boolean): void                     |
+| - searchData(SearchCriteria): List<SubjectResult>         |
+| - getTotalCount(SearchCriteria): int                      |
+| - exportToCSV(List<SubjectResult>, File): void            |
+| + handleImport(): void                                    |
+| + setStudentService(StudentService): void                 |
+| + setGradeService(GradeService): void                     |
+| + setCommentService(SubjectCommentService): void          |
++-----------------------------------------------------------+
 ```
-- **CommentController.java**:
-    - `commentService` -> SubjectCommentService instance
-    - `initialize()` -> Initializes comment controller
-    - `validateCommentInput()` -> Validates comment data
-    - `refreshCommentView()` -> Updates comment display
-    - `handleAddComment()` -> Handles comment addition
-    - `handleUpdateComment()` -> Handles comment modification
-    - `handleDeleteComment()` -> Handles comment deletion
+
+- **StudentStatsController.java**:
+
+    - `studentNameLabel` -> Label for displaying the student's name
+    - `subjectComboBox` -> ComboBox for selecting subjects
+    - `gradeChart` -> LineChart for displaying grades over time
+    - `dateAxis` -> CategoryAxis for dates on the x-axis
+    - `gradeAxis` -> NumberAxis for grades on the y-axis
+    - `noDataLabel` -> Label for displaying no data message
+    - `refreshButton` -> Button for refreshing the statistics
+    - `exportButton` -> Button for exporting the statistics
+    - `subjects` -> List of subjects available for selection
+    - `statisticsService` -> StatisticsService instance for handling statistics
+    - `currentStudent` -> Student object representing the current student
+    - `initialize()` -> Initializes the controller and sets up the UI
+    - `setCurrentStudent()` -> Sets the current student and updates the UI
+    - `updateGradeChart()` -> Updates the grade chart for the selected subject
+    - `handleRefresh()` -> Handles the click event for the refresh button
+    - `handleExport()` -> Handles the click event for the export button
+    - `setStatisticsService()` -> Sets the StatisticsService for the controller
+
 ```
-+-------------------------------------------------+
-|                CommentController                |
-+-------------------------------------------------+
-| - commentService: SubjectCommentService         |
-+-------------------------------------------------+
-| + initialize(): void                            |
-| + validateCommentInput(): boolean               |
-| + refreshCommentView(): void                    |
-| + handleAddComment(): void                      |
-| + handleUpdateComment(): void                   |
-| + handleDeleteComment(): void                   |
-+-------------------------------------------------+
++-------------------------------------------------------------------+
+|                   StudentStatsController                          |
++-------------------------------------------------------------------+
+| - studentNameLabel: Label                                         |
+| - subjectComboBox: ComboBox<String>                               |
+| - gradeChart: LineChart<String, Number>                           |
+| - dateAxis: CategoryAxis                                          |
+| - gradeAxis: NumberAxis                                           |
+| - noDataLabel: Label                                              |
+| - refreshButton: Button                                           |
+| - exportButton: Button                                            |
+| - subjects: List<String>                                          |
+| - statisticsService: StatisticsService                            |
+| - currentStudent: Student                                         |
++-------------------------------------------------------------------+
+| - initialize(URL location, ResourceBundle resources): void        |
+| - setCurrentStudent(Student student): void                        |
+| - updateGradeChart(String subject): void                          |
+| - handleRefresh(): void                                           |
+| - handleExport(): void                                            |
+| - setStatisticsService(StatisticsService statisticsService): void |
++-------------------------------------------------------------------+
 ```
 
 - **BackupController.java**:
+
     - `backupService` -> BackupService instance
     - `handleCreateBackup()` -> Handles backup creation
     - `handleRestoreBackup()` -> Handles backup restoration
@@ -982,86 +1289,17 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 | + handleDeleteBackup(): void                    |
 +-------------------------------------------------+
 ```
-- **ImportExportController.java**:
-    - `importExportService` -> ImportExportService instance
-    - `initialize()` -> Initializes import/export controller
-    - `handleFileSelection()` -> Handles file picker dialog
-    - `handleCSVExport()` -> Handles CSV file export
-    - `handlePDFExport()` -> Handles PDF file export
-
-```
-+-------------------------------------------------+
-|              ImportExportController             |
-+-------------------------------------------------+
-| - importExportService: ImportExportService      |
-+-------------------------------------------------+
-| + initialize(): void                            |
-| + handleFileSelection(): void                   |
-| + handleCSVExport(): void                       |
-| + handlePDFExport(): void                       |
-+-------------------------------------------------+
-```
-
-- **SearchController.java**:
-    - `studentService` -> StudentService instance
-    - `gradeService` -> GradeService instance
-    - `initialize()` -> Initializes search controller
-    - `clearSearchResults()` -> Clears current search results
-    - `exportSearchResults()` -> Exports current search to CSV/PDF
-    - `handleGeneralSearch()` -> Handles general student search
-    - `handleSubjectSearch()` -> Handles subject-specific search
-    - `handleAdvancedSearch()` -> Handles complex search criteria
-    - `updateSearchResults()` -> Updates search result display
-    - `handlePagination()` -> Manages pagination controls
-```
-+-------------------------------------------------+
-|                SearchController                 |
-+-------------------------------------------------+
-| - studentService: StudentService                |
-| - gradeService: GradeService                    |
-+-------------------------------------------------+
-| + initialize(): void                            |
-| + clearSearchResults(): void                    |
-| + exportSearchResults(): void                   |
-| + handleGeneralSearch(): void                   |
-| + handleSubjectSearch(): void                   |
-| + handleAdvancedSearch(): void                  |
-| + updateSearchResults(): void                   |
-| + handlePagination(): void                      |
-+-------------------------------------------------+
-```
-- **GradeController.java**:
-    - `gradeService` -> GradeService instance
-    - `initialize()` -> Initializes grade controller
-    - `handleAddGrade()` -> Handles adding new grades
-    - `handleUpdateGrade()` -> Handles grade modifications
-    - `handleDeleteGrade()` -> Handles grade deletion
-    - `validateGradeInput()` -> Validates grade data
-    - `refreshGradeView()` -> Updates grade display
-```
-+-------------------------------------------------+
-|                GradeController                  |
-+-------------------------------------------------+
-| - gradeService: GradeService                    |
-+-------------------------------------------------+
-| + initialize(): void                            |
-| + handleAddGrade(): void                        |
-| + handleUpdateGrade(): void                     |
-| + handleDeleteGrade(): void                     |
-| + validateGradeInput(): boolean                 |
-| + refreshGradeView(): void                      |
-+-------------------------------------------------+
-```
-- **TabController.java**:
-    - `initialize()` -> Initialize    
 
 ### 6. **Utils Layer**
 * * *
 
 - **SearchCriteria.java**:
+
     - `searchValue` -> Value typed in the search bar
     - `pageNumber` -> Page number (default: 1)
     - `pageSize` -> Page size (default: 15)
+    - `sortField` -> Field used for sorting
+    - `sortDirection` -> Direction of sorting (ascending or descending)
     - `SearchCriteria()` -> Default constructor
     - `SearchCriteria()` -> Constructor with searchValue
     - `getSearchValue()` -> Returns the search value
@@ -1070,8 +1308,14 @@ The Service layer contains business logic and orchestrates calls to the DAOs
     - `setPageNumber()` -> Sets the page number
     - `getPageSize()` -> Returns the page size
     - `setPageSize()` -> Sets the page size
-    - `getOffset()` -> Calculates the offset ((pageNumber - 1) * pageSize)
+    - `getSortField()` -> Returns the sort field
+    - `setSortField()` -> Sets the sort field
+    - `getSortDirection()` -> Returns the sort direction
+    - `setSortDirection()` -> Sets the sort direction
+    - `getOffset()` -> Calculates the offset
     - `toString()` -> String representation
+    - `equals()` -> Checks for equality with another object
+    - `hashCode()` -> Generates a hash code for the SearchCriteria
 ```
 +-------------------------------------------------+
 |                SearchCriteria                   |
@@ -1079,6 +1323,8 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 | - searchValue: String                           |
 | - pageNumber: int                               |
 | - pageSize: int                                 |
+| - sortField: String                             |
+| - sortDirection: String                         |
 +-------------------------------------------------+
 | + SearchCriteria()                              |
 | + SearchCriteria(String): void                  |
@@ -1088,12 +1334,19 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 | + setPageNumber(int): void                      |
 | + getPageSize(): int                            |
 | + setPageSize(int): void                        |
+| + getSortField(): String                        |
+| + setSortField(String): void                    |
+| + getSortDirection(): String                    |
+| + setSortDirection(String): void                |
 | + getOffset(): int                              |
 | + toString(): String                            |
+| + equals(Object): boolean                       |
+| + hashCode(): int                               |
 +-------------------------------------------------+
 ```
 
 - **SubjectResult.java**:
+
     - `subject` -> Subject
     - `grades` -> List of grades (String format "grade1, grade2, grade3...")
     - `studentAverage` -> Student's average
@@ -1144,30 +1397,127 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 | + toString(): String                            |
 +-------------------------------------------------+
 ```
-- **InputValidator.java**:
-    - `isValidName()` -> Validates name format
-    - `isValidAge()` -> Validates if age is within acceptable range
-    - `isValidGrade()` -> Validates if grade is within valid range
-    - `isValidId()` -> Validates ID format
-    - `sanitizeInput()` -> Cleans and secures an input string
-    - `validateStudent()` -> Validates all student fields when adding new student
-    - `validateGrade()` -> Validates all grade fields
-    - `validateUser()` -> Validates user registration data
+-  **AlertUtils.java**:
+
+    - `CSS_FILE` -> Path to the CSS file for custom styling
+    - `applyCustomStyle()` -> Applies custom styling to the specified alert dialog
+    - `showAlert()` -> Displays an alert dialog with the specified title and message
+    - `showError()` -> Displays an error alert dialog with the specified title and message
+    - `showWarning()` -> Displays a warning alert dialog with the specified title and message
+    - `showInformation()` -> Displays an information alert dialog with the specified title and message
+
 ```
-+-------------------------------------------------+
-|                InputValidator                   |
-+-------------------------------------------------+
-| + isValidName(String): boolean                  |
-| + isValidAge(int): boolean                      |
-| + isValidGrade(double): boolean                 |
-| + isValidId(String): boolean                    |
-| + sanitizeInput(String): String                 |
-| + validateStudent(Student): boolean             |
-| + validateGrade(Grade): boolean                 |
-| + validateUser(User): boolean                   |
-+-------------------------------------------------+
++--------------------------------------------------+
+|                  AlertUtils                      |
++--------------------------------------------------+
+| - CSS_FILE: String                               |
++--------------------------------------------------+
+| + applyCustomStyle(Alert): void                  |
+| + showAlert(String, String): void                |
+| + showError(String, String): void                |
+| + showWarning(String, String): void              |
+| + showInformation(String, String): void          |
++--------------------------------------------------+
+
+```
+
+- **DialogUtils.java**:
+
+    - `DialogField` -> Represents an input field in a dialog window
+    - `label` -> Label for the dialog field
+    - `textField` -> TextField for user input
+    - `initialValue` -> Initial value for the text field
+    - `DialogField()` -> Constructor to create a dialog field
+    - `getLabel()` -> Returns the label of the dialog field
+    - `getTextField()` -> Returns the text field
+    - `getValue()` -> Returns the trimmed text from the text field
+    - `setValue()` -> Sets the value of the text field
+    - `focus()` -> Focuses on the text field and selects all its text
+    - `TextAreaField` -> Represents a text area in a dialog window
+    - `label` -> Label for the text area field
+    - `textArea` -> TextArea for user input
+    - `initialValue` -> Initial value for the text area
+    - `TextAreaField()` -> Constructor to create a text area field
+    - `getLabel()` -> Returns the label of the text area field
+    - `getTextArea()` -> Returns the text area
+    - `getValue()` -> Returns the trimmed text from the text area
+    - `setValue()` -> Sets the value of the text area
+    - `focus()` -> Focuses on the text area and selects all its text
+    - `showEditDialog()` -> Creates a generic edit dialog window with custom validation
+    - `showTextAreaDialog()` -> Shows a dialog window containing a TextArea for user input
+    - `showDeleteConfirmation()` -> Shows a delete confirmation window
+    - `createActionColumn()` -> Creates a table column that contains action buttons for each row
+    - `setupColumnSorting()` -> Sets up sorting for the columns of the TableView
+
+```
++-------------------------------------------------------------------------+
+|                  DialogUtils                                            |
++-------------------------------------------------------------------------+
+| - DialogField                                                           |
+|   - label: String                                                       |
+|   - textField: TextField                                                |
+|   - initialValue: String                                                |
+| + DialogField(String, String): void                                     |
+| + getLabel(): String                                                    |
+| + getTextField(): TextField                                             |
+| + getValue(): String                                                    |
+| + setValue(String): void                                                |
+| + focus(): void                                                         |
+| - TextAreaField                                                         |
+|   - label: String                                                       |
+|   - textArea: TextArea                                                  |
+|   - initialValue: String                                                |
+| + TextAreaField(String, String): void                                   |
+| + getLabel(): String                                                    |
+| + getTextArea(): TextArea                                               |
+| + getValue(): String                                                    |
+| + setValue(String): void                                                |
+| + focus(): void                                                         |
+| + showEditDialog(String, List<DialogField>,                             |
+|        Consumer<List<DialogField>>,                                     |
+|        java.util.function.Function<List<DialogField>, String>): void    |
+| + showTextAreaDialog(String, TextAreaField, Button...): void            |
+| + showDeleteConfirmation(String, String, Runnable): void                |
+| + createActionColumn(String, String, Consumer<T>): TableColumn<T, Void> |
+| + setupColumnSorting(TableView<?>, Runnable): void                      |
++-------------------------------------------------------------------------+
+```
+- **GradeValidator.java**:
+
+    - `ValidationResult` -> Represents the result of a validation check
+    - `valid` -> Indicates if the validation passed
+    - `errorMessage` -> The error message if validation failed
+    - `focusField` -> The field to focus on if validation failed
+    - `ValidationResult()` -> Constructor for creating a validation result
+    - `isValid()` -> Checks if the validation passed
+    - `getErrorMessage()` -> Gets the error message
+    - `getFocusField()` -> Gets the field that should receive focus
+    - `validateGradeInput()` -> Validates the input for grade and coefficient fields
+    - `checkForChanges()` -> Checks if the grade or coefficient values have changed
+    - `createGradeFromFields()` -> Creates a Grade object from the validated fields
+    - `createCommentFromField()` -> Creates a SubjectComment object from the validated field
+
+```
++---------------------------------------------------------------------------+
+|                    GradeValidator                                         |
++---------------------------------------------------------------------------+
+| - ValidationResult                                                        |
+|   - valid: boolean                                                        |
+|   - errorMessage: String                                                  |
+|   - focusField: Object                                                    |
+| + ValidationResult(boolean, String, Object): void                         |
+| + isValid(): boolean                                                      |
+| + getErrorMessage(): String                                               |
+| + getFocusField(): Object                                                 |
+| + validateGradeInput(TextField, TextField): ValidationResult              |
+| + checkForChanges(double, double, TextField, TextField): ValidationResult |
+| + createGradeFromFields(Long, String, TextField, TextField): Grade        |
+| + createCommentFromField(Long, String, TextArea): SubjectComment          |
++---------------------------------------------------------------------------+
+
 ```
 - **PasswordUtils.java**:
+
     - `generateSalt()` -> Generates random salt
     - `hashPassword()` -> Hashes password with salt
     - `hashPasswordWithSalt()` -> Hashes password with auto-generated salt
@@ -1187,6 +1537,7 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 +-------------------------------------------------+
 ```
 - **CSVHandler.java**:
+
     - `delimiter` -> CSV delimiter character (default: comma)
     - `CSVHandler()` -> Default constructor with standard delimiters
     - `CSVHandler()` -> Constructor with custom delimiters
@@ -1215,6 +1566,7 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 +-------------------------------------------------+
 ```
 - **PDFExporter.java**:
+
     - `document` -> Document instance
     - `writer` -> PdfWriter instance
     - `PDFExporter()` -> Default constructor, initializes PDF components
@@ -1239,6 +1591,97 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 | + addFooter(): void                             |
 +-------------------------------------------------+
 ```
+
+- **SceneUtils.java**:
+
+    - `changeScene()` -> Changes the current scene of the given stage to a new FXML view
+    - `<T>` -> The type of the controller associated with the FXML
+    - `stage` -> The stage to change the scene for
+    - `fxmlPath` -> The path to the FXML file
+    - `title` -> The title to set for the stage
+    - `return` -> The controller associated with the loaded FXML
+    - `throws Exception` -> If loading the FXML fails
+
+```
++--------------------------------------------------+
+|                    SceneUtils                    |
++--------------------------------------------------+
+| + changeScene(Stage, String, String): T          |
++--------------------------------------------------+
+
+```
+
+- **StudentValidator.java**:
+
+    - `ValidationResult` -> Represents the result of a validation check
+    - `valid` -> Indicates if the validation passed
+    - `errorMessage` -> The error message if validation failed
+    - `focusField` -> The TextField that should receive focus if validation fails
+    - `ValidationResult()` -> Constructor for creating a validation result
+    - `isValid()` -> Checks if the validation passed
+    - `getErrorMessage()` -> Gets the error message
+    - `getFocusField()` -> Gets the TextField that should receive focus
+    - `validateForCreation()` -> Validates the field for creating a new student
+    - `validateAndApplyChanges()` -> Validates and applies changes to the student object based on the provided fields
+    - `validateFirstName()` -> Validates the first name input
+    - `validateLastName()` -> Validates the last name input
+    - `validateAge()` -> Validates the age input
+    - `validateClassName()` -> Validates the class name input
+    - `formatName()` -> Formats the name by capitalizing the first letter and correcting spacing around hyphens
+    - `formatClassName()` -> Formats the class name by correcting spacing and capitalization
+    - `createStudentFromFields()` -> Creates a Student object from the provided TextFields
+
+```
++----------------------------------------------------------+
+|                StudentValidator                          |
++----------------------------------------------------------+
+| - ValidationResult                                       |
+|   - valid: boolean                                       |
+|   - errorMessage: String                                 |
+|   - focusField: TextField                                |
+| + ValidationResult(boolean, String, TextField): void     |
+| + isValid(): boolean                                     |
+| + getErrorMessage(): String                              |
+| + getFocusField(): TextField                             |
++----------------------------------------------------------+
+| + validateForCreation                                    |
+|       (TextField, TextField, TextField, TextField):      | 
+|                                         ValidationResult |
+| + validateAndApplyChanges                                |
+|       (Student, TextField, TextField, TextField,         |
+|                             TextField): ValidationResult |
+| + validateFirstName(String, TextField): ValidationResult |
+| + validateLastName(String, TextField): ValidationResult  |
+| + validateAge(String, TextField): ValidationResult       |
+| + validateClassName(String, TextField): ValidationResult |
+| + formatName(String): String                             |
+| + formatClassName(String): String                        |
+| + createStudentFromFields(TextField, TextField,          |
+|                           TextField, TextField): Student |
++----------------------------------------------------------+
+
+```
+### **Main**
+
+- **Main.java**:
+
+    - `start()` -> Entry point for the JavaFX application
+    - Loads the initial FXML view ()
+    - Sets the application icon
+    - Configures the main scene with CSS
+    - Sets the title of the main window and shows the stage
+    - `main()` -> The main method to launch the JavaFX application
+
+```
++--------------------------------------------------+
+|                     Main                         |
++--------------------------------------------------+
+| + start(Stage): void                             |
+| + main(String[]): void                           |
++--------------------------------------------------+
+
+```
+
 ### Directory Structure
 * * *
 
@@ -1274,33 +1717,42 @@ StudentManagementSystem/
 │   │   │   │   │   │   ├── ImportExportService.java
 │   │   │   │   │   │   └── BackupService.java
 │   │   │   │   │   ├── controller/
-│   │   │   │   │   │   ├── StudentFormController.java
-│   │   │   │   │   │   ├── StatisticsController.java
-│   │   │   │   │   │   ├── CommentController.java
-│   │   │   │   │   │   ├── BackupController.java
-│   │   │   │   │   │   ├── ImportExportController.java
-│   │   │   │   │   │   ├── SearchController.java
+│   │   │   │   │   │   ├── BaseTableController.java
+│   │   │   │   │   │   ├── LoginController.java
+│   │   │   │   │   │   ├── RegisterController.java
+│   │   │   │   │   │   ├── StudentController.java
+│   │   │   │   │   │   ├── StudentsController.java
+│   │   │   │   │   │   ├── StudentStatsController.java
+│   │   │   │   │   │   ├── StudentsStatsController.java
 │   │   │   │   │   │   ├── TabController.java
-│   │   │   │   │   │   └── GradeController.java
+│   │   │   │   │   │   └── WelcomeController.java
 │   │   │   │   │   ├── utils/
-│   │   │   │   │   │   ├── InputValidator.java
-│   │   │   │   │   │   ├── PasswordUtils.java
+│   │   │   │   │   │   ├── AlertUtils.java
 │   │   │   │   │   │   ├── CSVHandler.java
-│   │   │   │   │   │   └── PDFExporter.java
+│   │   │   │   │   │   ├── DialogUtils.java
+│   │   │   │   │   │   ├── GradeValidator.java
+│   │   │   │   │   │   ├── PasswordUtils.java
+│   │   │   │   │   │   ├── PDFExporter.java
+│   │   │   │   │   │   ├── SceneUtils.java
+│   │   │   │   │   │   ├── SearchCriteria.java
+│   │   │   │   │   │   ├── StudentValidator.java
+│   │   │   │   │   │   └── SubjectResult.java
 │   │   │   │   │   └── Main.java
 │   │   │   │
 │   │   │   └── resources/
 │   │   │       ├── fxml/
-│   │   │       │   ├── main-view.fxml
-│   │   │       │   ├── student-form.fxml
-│   │   │       │   ├── student-list.fxml
 │   │   │       │   ├── login.fxml
-│   │   │       │   ├── statistics.fxml
-│   │   │       │   └── search.fxml
+│   │   │       │   ├── register.fxml
+│   │   │       │   ├── studentStats.fxml
+│   │   │       │   ├── studentsStats.fxml
+│   │   │       │   ├── student.fxml
+│   │   │       │   ├── students.fxml
+│   │   │       │   ├── tab.fxml
+│   │   │       │   └── welcome.fxml
 │   │   │       ├── css/
 │   │   │       │   └── styles.css
 │   │   │       ├── images/
-│   │   │       │   └── icons/
+│   │   │       │   └── icon.png
 │   │   │       ├── database/
 │   │   │       │   └── schema.sql
 │   │   │       └── config/
@@ -1310,6 +1762,20 @@ StudentManagementSystem/
 │       ├── java/
 │       │   ├── com/
 │       │   │   ├── studentmanagement/
+│       │   │   │   ├── controller/
+│       │   │   │   │   ├── BaseTableControllerUnitTest.java
+│       │   │   │   │   ├── LoginControllerUITest.java
+│       │   │   │   │   ├── LoginControllerUnitTest.java
+│       │   │   │   │   ├── RegisterControllerUITest.java
+│       │   │   │   │   ├── RegisterControllerUnitTest.java
+│       │   │   │   │   ├── StudentControllerUITest.java
+│       │   │   │   │   ├── StudentControllerUnitTest.java
+│       │   │   │   │   ├── StudentStatsControllerUITest.java
+│       │   │   │   │   ├── StudentStatsControllerUnitTest.java
+│       │   │   │   │   ├── StudentsStatsControllerUITest.java
+│       │   │   │   │   ├── StudentsStatsControllerUnitTest.java
+│       │   │   │   │   ├── StudentsControllerUITest.java
+│       │   │   │   │   └── StudentsControllerUnitTest.java
 │       │   │   │   ├── dao/
 │       │   │   │   │   └── StudentDAOTest.java
 │       │   │   │   ├── service/
@@ -1452,4 +1918,185 @@ The `Backup` table maintains a record of backup operations, including the type o
 | - error_message: TEXT                                                |
 | - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP                    |
 +----------------------------------------------------------------------+
+```
+
+## UI
+
+### Login interface layout
+
+```
++----------------------------------------------------------------------------------+
+|                                                                                  |
+|                                      Logo                                        |
+|                                                                                  |
+|                                     ÉDUSYS                                       |
+|                                                                                  |
+|                           Nom d'utilisateur: [__________]                        |
+|                                                                                  |
+|                           Mot de passe:      [__________]                        |
+|                                                                                  |
+|                                 [   Connecte moi   ]                             |
+|                                                                                  |
+|                                          ou                                      |
+|                                [   Enregistre moi   ]                            |
+|                                                                                  |
+|                                                                                  |
++----------------------------------------------------------------------------------+
+
+```
+### Registration interface layout
+
+```
++----------------------------------------------------------------------------------+
+|                                                                                  |
+|                                   Logo                                           |
+|                                                                                  |
+|                                  ÉDUSYS                                          |
+|                                                                                  |
+|                         Nom d'utilisateur: [__________]                          |
+|                                                                                  |
+|                         Mot de passe:      [__________]                          |
+|                                                                                  |
+|                         Confirme ton mp:   [__________]                          |
+|                                                                                  |
+|                                                                                  |
+|                                [   Enregistre moi   ]                            |
+|                                                                                  |
+|                                                                                  |
+|                                  [   ⬅ Retour   ]                               |
+|                                                                                  |
++----------------------------------------------------------------------------------+
+
+```
+### Welcome screen layout
+
+```
++--------------+
+|   Bonjour !  |
++--------------+-------------------------------------------------------------------+
+|                                                                                  |
+|                                                                                  |
+|                                                                                  |
+|                                                                                  |
+|                                     BIENVENUE                                    |
+|                                                                                  |
+|                                 [Nom d'utilisateur]                              |
+|                                                                                  |
+|                        Je te souhaite une splendide journée !                    |
+|                                                                                  |
+|                                                                                  |
+|                                                                                  |
+|                                                                                  |
+|                                                                                  |
+|                                                                                  |
++----------------------------------------------------------------------------------+
+
+```
+
+### Students management interface layout
+
+```
+               +---------------+
+               | Les Etudiants |
++--------------+---------------+---------------------------------------------------+
+|                                                                                  |
+| Rechercher: [_____________________] [Je recherche]  [ J'importe ] [ J'exporte ]  |
+|                                                                                  |
++--------+----------+----------+-----+--------+---------+------------+-------------+
+|   ID   | Prénom   | Nom      | Age | Classe | Moyenne | Je modifie | Je supprime |
++--------+----------+----------+-----+--------+---------+------------+-------------+
+|   [ ]  |  [____]  |  [____]  | [ ] |  [__]  |   [__]  |    [__]    |     [__]    |
+|        |          |          |     |        |         |            |             |
+|        |          |          |     |        |         |            |             |
+|        |          |          |     |        |         |            |             |
+|        |          |          |     |        |         |            |             |
+|        |          |          |     |        |         |            |             |
+|        |          |          |     |        |         |            |             |
+|        |          |          |     |        |         |            |             |
+|        |          |          |     |        |         |            |             |
++--------+----------+----------+-----+--------+---------+------------+-------------+
+|                                 [ Pagination ]                                   |
+|                                                                                  |
+| Nom:            Prénom:        Age:    Classe:                                   |
+| [___________]  [____________]  [____]  [____]              [J'ajoute l'étudiant] |
++----------------------------------------------------------------------------------+
+
+```
+
+### Students age distribution interface layout
+
+```
+                               +----------------+
+                               | Et Leurs Stats |
++------------------------------+----------------+----------------------------------+
+|                      Répartition des étudiants par tranche d'âge                 |
+|                                                                                  |
+|                                                                                  |
+|                          Répartition par âge (Graphique)                         |
+|                                                                                  |
+|                                                                                  |
+|                            [ Graphique en Camembert ]                            |
+|                                                                                  |
+|                               Aucune donnée disponible                           |
+|                                                                                  |
+|                                                                                  |
+|                                                                                  |
+|                                                                                  |
+|                             [ Rafraîchir ]   [ Exporter ]                        |
++----------------------------------------------------------------------------------+
+
+```
+
+### Student management interface layout
+
+```
+                                                +--------------+
+                                                | Un  Etudiant |
++-----------------------------------------------+--------------+-------------------+
+| ID étudiant : [_____]  [ OK ]  Nom de l'étudiant : [______]                      |
+| Classe : [_]                                                                     |
+|                                                                                  |
+| Matières                   Note      Coeff     [J'ajoute une note]               |
+|                                                                                  |
+| [___________]            | [__]    | [__]    |                                   |
+|                                                                                  |
+| Commentaire: [____________________________] [J'ajoute un commentaire]            |
+|                                                                                  |
+| Rechercher: [______________________________________________________]  [Je trie]  |
++----------------+------------+------------+-----------+--------+------------------+
+| Matières       | Notes      | Moy min    | Moy max   | Moy    |    Commentaires  |
++----------------+------------+------------+-----------+--------+------------------+
+| [_________]    | [________] | [_____]    | [____]    | [_____]| [_______________]|
+|                |            |            |           |        |                  |
+|                |            |            |           |        |                  |
+|                |            |            |           |        |                  |
++----------------+------------+------------+-----------+--------+------------------+
+|                               [ Pagination ]                      [J'exporte]    |
++----------------------------------------------------------------------------------+
+
+```
+
+### Student grades evolution interface layout
+
+````
+                                                               +-------------------+
+                                                               | Et Ses Stats      |
++--------------------------------------------------------------+-------------------+
+|                      Évolution des notes de [Nom de l'étudiant]                  |
+|                                                                                  |
+|                       Matière: [ Sélectionner une matière ]                      |
+|                                                                                  |
+|                       Évolution des notes                                        |
+|                                                                                  |
+|                               [ Graphique des Notes ]                            |
+|                                                                                  |
+|                                                                                  |
+|                                                                                  |
+|                                                                                  |
+|                               Aucune donnée disponible                           |
+|                                                                                  |
+|                                                                                  |
+|                            [ Rafraîchir ]   [ Exporter ]                         |
++----------------------------------------------------------------------------------+
+
 ```
