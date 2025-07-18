@@ -47,6 +47,11 @@ public class LoginControllerUITest {
     }
 
     @Start
+    /**
+     * Initializes the test environement by loading the FXML and setting up the controller
+     * @param stage the primary stage for this application
+     * @throws Exception if an error occures while loading the FXML
+     */
     public void start(Stage stage) throws Exception{
         //Load FXML
         FXMLLoader loader = new
@@ -65,6 +70,10 @@ public class LoginControllerUITest {
     }
 
     @BeforeEach
+    /**
+     * Sets up the testing environement before each test case
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void setUp(FxRobot robot){
         //Set up the behaviour of the mock
         when(authServiceMock.authenticate(anyString(), anyString())).thenReturn(false);
@@ -75,11 +84,19 @@ public class LoginControllerUITest {
     }
 
     @AfterEach
+    /**
+     * Cleans up the testing environement after each test cas
+     * @throws Exception if an error occurs during cleanup
+     */
     public void tearDown() throws Exception{
         FxToolkit.cleanupStages();
     }
 
     @Test
+    /**
+     * Tests successful login with valid credentials
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testSuccessfulLogin(FxRobot robot){
         //Simulate user input
         robot.clickOn(usernameField).write("validUser");
@@ -90,6 +107,10 @@ public class LoginControllerUITest {
     }
 
     @Test
+    /**
+     * Test failed login with invalid credentials
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testFailedLogin(FxRobot robot) {
         //Simulate user input
         robot.clickOn(usernameField).write("invalidUser");
@@ -105,6 +126,10 @@ public class LoginControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the login button is clicked with empty fields
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testEmptyFields(FxRobot robot){
         //Click on the login button without filling in the fields
         robot.clickOn("#buttonLogin");
@@ -115,6 +140,10 @@ public class LoginControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the username field is empty during login
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testEmptyUsername(FxRobot robot){
         //Fill in only the password
         robot.clickOn(passwordField).write("password");
@@ -125,7 +154,11 @@ public class LoginControllerUITest {
         robot.press(KeyCode.ENTER).release(KeyCode.ENTER);
     }
 
-        @Test
+    @Test
+    /**
+     * Tests the scenario where the password field is empty during login
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testEmptyPassword(FxRobot robot) {
         // Fill in only the username
         robot.clickOn(usernameField).write("username");
@@ -139,12 +172,20 @@ public class LoginControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the navigation to the registration page when the register button is clicked
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testRegisterNavigation(FxRobot robot){
         //Click on the register button
         robot.clickOn("#buttonRegister");
     }
 
     @Test
+    /**
+     * Tests that the fields are cleared after a successful login
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testSuccessfulLoginClearsFields(FxRobot robot){
         //Simulate successful login
         robot.clickOn(usernameField).write("validUser");
@@ -156,6 +197,10 @@ public class LoginControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where an exception occurs during authentication
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testAuthenticationException(FxRobot robot){
         //Setup mock to throw an exception
         when(authServiceMock.authenticate(("exceptionUser"), "exceptionPass")).thenThrow(new RuntimeException("test exception"));
@@ -171,6 +216,10 @@ public class LoginControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the handling of long credentials during login
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testLongCredentials(FxRobot robot){
         //Test with the very long username and password
         String longString = "a".repeat(100);
@@ -182,6 +231,10 @@ public class LoginControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the handling of special characters in credentials during login
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testSpecialCharactersInCredentials(FxRobot robot){
         //Test with special characters
         String specialChars = "!@#$%^&*()_+{}[]|\"':;<>,.?/";
