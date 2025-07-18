@@ -23,6 +23,7 @@ class LoginControllerUnitTest {
 
     @BeforeEach
     void setup(){
+        //Intitialize the LoginController and inject the mocked AuthenticationService
         loginController = new LoginController();
         loginController.setAuthService(authServiceMock);
     }
@@ -35,6 +36,10 @@ class LoginControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the successful login scenario
+     * @throws Exception if an error occures during the test
+     */
     void testLoginSucess() throws Exception{
         //Config mock to simulate a sucessful authentication
         when(authServiceMock.authenticate("testuser", "correctpassword" )).thenReturn(true);
@@ -43,6 +48,10 @@ class LoginControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the failed login scenario
+     * @throws Exception if an error occurs during the test
+     */
     void testLoginFailure() throws Exception{
         //Config mock to simulate a failed authentication
         when(authServiceMock.authenticate("testuser", "wrongpassword")).thenReturn(false);
@@ -52,6 +61,10 @@ class LoginControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the login scenario when an exceptin is thrown
+     * @throws Exception if an error occurs during the test
+     */
     void testLoginException() throws Exception{
         //Config mock to simulate exception
         when(authServiceMock.authenticate("testuser", "exceptionpassword")).thenThrow(new RuntimeException("Test exception"));
@@ -65,6 +78,10 @@ class LoginControllerUnitTest {
     }
 
     @Test
+    /**
+     * Tests the interactions with the authentication service
+     * @throws Exception if an error occurs during the test
+     */
     void testAuthServiceInteractions() throws Exception{
         //Verify that service authentication is called with good parameters
         authServiceMock.authenticate("user1", "pass1");
