@@ -57,6 +57,11 @@ public class RegisterControllerUITest {
     }
 
     @Start
+    /**
+     * Initializes the test environement by loading the FXML and setting up the controller
+     * @param stage the primary stage for this application
+     * @throws Exception if an error occurs while loading the FXML
+     */
     public void start(Stage stage) throws Exception{
         //Load FXML
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/register.fxml"));
@@ -72,6 +77,10 @@ public class RegisterControllerUITest {
     }
 
     @BeforeEach
+    /**
+     * Sets up the testing environement before each test case
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void setUp(FxRobot robot){
         //Retrieve ref to UI elements
         usernameField = robot.lookup("#textFieldUsername").queryAs(TextField.class);
@@ -84,11 +93,19 @@ public class RegisterControllerUITest {
     }
 
     @AfterEach
+    /**
+     * Cleans up the testing environement after each test case
+     * @throws Exception if an error occurs during cleanup
+     */
     public void tearDown() throws Exception{
         FxToolkit.cleanupStages();
     }
 
     @Test
+    /**
+     * Tests the scenario where the registration button is clicked with empty fields
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testEmptyFields(FxRobot robot){
         //Click on the register button without filling in the fields
         robot.clickOn("#buttonRegister");
@@ -99,6 +116,10 @@ public class RegisterControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the password and confirm password fields do not match
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testPasswordMismatch(FxRobot robot){
         //Fill in with mismatched passwords
         robot.clickOn(usernameField).write("surnom");
@@ -116,6 +137,10 @@ public class RegisterControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the password is too short
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testPasswordTooShort(FxRobot robot){
         //Fill in with password that's too short‼
         robot.clickOn(usernameField).write("surnom");
@@ -129,6 +154,10 @@ public class RegisterControllerUITest {
     }  
 
     @Test
+    /**
+     * Tests the scenario where the password contains no uppercase letter
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testPasswordNoUppercase(FxRobot robot){
         //Fill in with password that has no uppercase letter
         robot.clickOn(usernameField).write("surnom");
@@ -142,6 +171,10 @@ public class RegisterControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the password contains ot lowercase letter
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testPasswordNoLowerCase(FxRobot robot){
         //Fill in with password that has no lowercase letter
         robot.clickOn(usernameField).write("surnom");
@@ -155,6 +188,10 @@ public class RegisterControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where the password contains no special character
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testPasswordNoSpecialChar(FxRobot robot){
         //Fill in with password that has no special character
         robot.clickOn(usernameField).write("surnom");
@@ -168,6 +205,10 @@ public class RegisterControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where an existing user attemps to register
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testUserAlreadyExists(FxRobot robot){
         //Config mock to make an RuntimeException
         doThrow(new RuntimeException("L'utilisateur existe déja")).when(authServiceMock).register(any(User.class));
@@ -183,6 +224,10 @@ public class RegisterControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the scenario where an unexpected exception occurs during registration
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testUnexpectedException(FxRobot robot){
         //Config mock to launch RuntimeException
         doThrow(new RuntimeException("Erreur inattendue")).when(authServiceMock).register(any(User.class));
@@ -197,12 +242,19 @@ public class RegisterControllerUITest {
     }
 
     @Test
+    /**
+     * Tests the navigation back to the login page
+     * @param robot the FxRobot instance used for simulating user input
+     */
     public void testBackToLoginNavigation(FxRobot robot){
         //Click on the back to login button
         robot.clickOn("#buttonBackToLogin");
     }
 
     @Test
+    /**
+     * Tests the injection of the authentication service into the controller
+     */
     public void testAuthServiceInjection(){
         //Create a mock for the authentication service
         AuthenticationService authServiceMock = mock(AuthenticationService.class);
