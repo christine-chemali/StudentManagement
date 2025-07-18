@@ -159,11 +159,18 @@ public class StudentsController extends BaseTableController<Student> {
         });
     }
 
-    //Setter to inject dependancies
+    /**
+     * Sets the StudentService to be used by this controller
+     * @param studentService the StudentService instance
+     */
     public void setStudentService(StudentService studentService){
         this.studentService = studentService;
     }
 
+    /**
+     * Sets the ImportExportService to be used by this controller
+     * @param importExportService the ImportExportServide instance
+     */
     public void setImportExportService(ImportExportService importExportService){
         this.importExportService = importExportService;
     }
@@ -183,6 +190,11 @@ public class StudentsController extends BaseTableController<Student> {
                 }
 
                 @Override
+                /**
+                 * Updates the item in the cell
+                 * @param item the item to display
+                 * @param empty indicates whether the cell is empty
+                 */
                 protected void updateItem(Void item, boolean empty){
                     super.updateItem(item, empty);
                     if (empty){
@@ -210,6 +222,11 @@ public class StudentsController extends BaseTableController<Student> {
                     });
                 }
                 @Override
+                /**
+                 * Updates the item in the cell
+                 * @param item the item to display
+                 * @param empty indicates whether the cell is empty
+                 */
                 protected void updateItem(Void item, boolean empty){
                     super.updateItem(item, empty);
                     if (empty){
@@ -345,6 +362,10 @@ public class StudentsController extends BaseTableController<Student> {
         classNameField.clear();
     }
 
+    /**
+     * Loads a page of students based on the provided page index
+     * @param pageIndex the index of the page to load
+     */
     private void loadStudentsPage(int pageIndex){
         try {
             //Create a SearchCriteria object for pagination
@@ -384,6 +405,10 @@ public class StudentsController extends BaseTableController<Student> {
         return 1;
     }
 
+    /**
+     * Displays a dialog for editing the specified student
+     * @param student the student to be edited
+     */
     private void showEditDialog(Student student){
         //Create a new dialog window
         Stage dialogStage = new Stage();
@@ -465,6 +490,10 @@ public class StudentsController extends BaseTableController<Student> {
         dialogStage.showAndWait();
     }
 
+    /**
+     * Displays a confirmation dialog for deleting the specified studetn
+     * @param student the student to be deleted
+     */
     private void showDeleteConfirmation(Student student){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation de suppression");
