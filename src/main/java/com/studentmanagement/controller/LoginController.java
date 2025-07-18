@@ -110,7 +110,10 @@ public class LoginController {
     textFieldPassword.clear();
     }   
 
-    //Set AuthService
+    /**
+     * Sets the AuthenticationService to be used by this controller
+     * @param authService the AuthenticationService instance
+     */
     public void setAuthService(AuthenticationService authService) {
         this.authService = authService;
     }
