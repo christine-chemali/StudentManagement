@@ -174,7 +174,10 @@ public  abstract class BaseTableController<T> {
         }
     }
 
-    //loads a page of data
+    /**
+     * Loads the specified page of data into the table
+     * @param pageIndex the index of the page to load
+     */
     protected void loadDataPage(int pageIndex){
         try{
             SearchCriteria criteria = createSearchCriteria();
@@ -198,7 +201,10 @@ public  abstract class BaseTableController<T> {
         }
     }
 
-    //Calculates the total number of pages
+    /**
+     * Calculates the total number of pages based on the number of items
+     * @return the total number of pages
+     */
     protected int calculatePageCount(){
         try{
             SearchCriteria criteria = createSearchCriteria();
@@ -215,7 +221,11 @@ public  abstract class BaseTableController<T> {
         return new SearchCriteria(searchField.getText());
     }
 
-    //Extracts the sort field name from a column
+    /**
+     * Extracts the sort field name from a column
+     * @param column the column from which to extract the sort field
+     * @return the name of the sort field
+     */
     protected String extractSortField(TableColumn<T, ?> column){
         return column.getId().replace("Column", "");
     }
@@ -237,13 +247,25 @@ public  abstract class BaseTableController<T> {
     //Sets up table columns
     protected abstract void setupTableColumns();
 
-    //Searches data according to criteria
+    /**
+     * Searches for data based on the provided criteria
+     * @param criteria the searcg criteria
+     * @return the list of data that matches the criteria
+     */
     protected abstract List<T> searchData(SearchCriteria criteria);
 
-    //Exports data to a CSV file
+    /**
+     * Exports teh provided data to the specified CSV file
+     * @param data the data to export
+     * @param file the file to which data will be exported
+     */
     protected abstract void exportToCSV(List<T> data, File file);
 
-    //Gets the total count of items
+    /**
+     * Gets the total count of items based on the provided criteria
+     * @param criteria the search criteria
+     * @return the total count of items
+     */
     protected abstract int getTotalCount(SearchCriteria criteria);
 
     //Handles import functionality
@@ -251,6 +273,10 @@ public  abstract class BaseTableController<T> {
     
     // ================ Setters for dependency injection ===========
 
+    /**
+     * Sets the ImportExportService to be used by this controller
+     * @param importExportService the ImportExportService intance
+     */
     public void ImportExportService(ImportExportService importExportService){
         this.importExportService = importExportService;
     }
