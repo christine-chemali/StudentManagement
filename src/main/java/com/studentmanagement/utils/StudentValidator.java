@@ -10,26 +10,51 @@ public class StudentValidator {
         private String errorMessage;
         private TextField focusField;
 
+        /**
+         * Construct a ValidationResult object
+         * @param valid indicates if the validation passed
+         * @param errorMessage the error message if validation failed
+         * @param focusField the TextField that should receive focus if validation fails
+         */
         public ValidationResult(boolean valid, String errorMessage, TextField focusField){
             this.valid = valid;
             this.errorMessage = errorMessage;
             this.focusField = focusField;
         }
 
+        /**
+         * Checks if the validation passed
+         * @return true if valid, false otherwise
+         */
         public boolean isValid(){
             return valid;
         }
 
+        /**
+         * Gets the error message
+         * @return the error message if validation failed
+         */
         public String getErrorMessage(){
             return errorMessage;
         }
 
+        /**
+         * Gets the TextField that should receive focus if validation fails
+         * @return the focus field
+         */
         public TextField getFocusField(){
             return focusField;
         }
     }
 
-    //Validate input fields for student creation
+    /**
+     * Validates the field for creating a new student
+     * @param firstNameField The TextField for the first name
+     * @param lastNameField the TextField for the last name
+     * @param ageField the TextField for age
+     * @param classNameField the TextField for class name
+     * @return ValidationResult indicating the result of the validation
+     */
     public static ValidationResult validateForCreation(TextField firstNameField, TextField lastNameField, TextField ageField, TextField classNameField){
         //Verify if all fields are full
         String firstName = firstNameField.getText().trim();
@@ -53,10 +78,18 @@ public class StudentValidator {
         return new ValidationResult(true, null, null);
     }
 
-    //Validate and apply changes to a Student object
+    /**
+     * Validates and applies changes to the student object based on the provided fields
+     * @param student the Student object to update
+     * @param firstNameField the TextField for the first name
+     * @param lastNameField the TextField for the last name
+     * @param ageField the TextField for age
+     * @param classNameField the TextField for class name
+     * @return ValidationResult indicating the result of the validation changes
+     */
     public static ValidationResult validateAndApplyChanges(Student student, TextField firstNameField, TextField lastNameField, TextField ageField, TextField classNameField){
         boolean hasChanges = false;
-        //Validate and apply changes for first name
+
         String firstName = firstNameField.getText().trim();
         if(!firstName.isEmpty()){
             ValidationResult result = validateFirstName(firstName, firstNameField);
@@ -67,7 +100,7 @@ public class StudentValidator {
                 hasChanges = true;
             }
         }
-        //Validate and apply changes for name
+
         String lastName = lastNameField.getText().trim();
         if(!lastName.isEmpty()){
             ValidationResult result = validateLastName(lastName, lastNameField);
@@ -78,7 +111,7 @@ public class StudentValidator {
                 hasChanges = true;
             }
         }
-        //Validate and apply changes for age
+
         String ageText = ageField.getText().trim();
         if(!ageText.isEmpty()){
             ValidationResult result = validateAge(ageText, ageField);
@@ -89,7 +122,7 @@ public class StudentValidator {
                 hasChanges = true;
             }
         }
-        //Validate and apply changes for class name
+
         String className = classNameField.getText().trim();
         if(!className.isEmpty()){
             ValidationResult result = validateClassName(className, classNameField);
@@ -106,7 +139,12 @@ public class StudentValidator {
         return new ValidationResult(true, null, null);
     }
    
-    //Validate first name
+    /**
+     * Validates the first name input
+     * @param firstName the first name to validate
+     * @param field the TextField associated with the first name
+     * @return ValidationResult indicating the result of the validation
+     */
     private static ValidationResult validateFirstName(String firstName, TextField field) {
         if(!firstName.matches("^[a-zA-ZÀ-ÿ\\s-]+$")) {
             return new ValidationResult(false, "Oups !\nLe prénom doit contenir uniquement des lettres.\nLe trait d'union est autorisé pour les prénoms composés.", field);
@@ -114,7 +152,12 @@ public class StudentValidator {
         return new ValidationResult(true, null, null);
     }
 
-    //Validate last name
+    /**
+     * Validate the last name input
+     * @param lastName the last name to validate
+     * @param field the TextField associated with the last name
+     * @return ValidationRestult indicating the result of validation
+     */
     private static ValidationResult validateLastName(String lastName, TextField field) {
         if(!lastName.matches("^[a-zA-ZÀ-ÿ\\s-]+$")) {
             return new ValidationResult(false, "Oups!\nLe nom doit contenir uniquement des lettres et des espaces.\nLe trait d'union est autorisé pour les noms composés comme Dupont-Martin !", field);
@@ -122,7 +165,12 @@ public class StudentValidator {
         return new ValidationResult(true, null, null);
     }
 
-    //Validate age
+    /**
+     * Validates the age input
+     * @param ageText the age input as text
+     * @param field the TextField associated with the age
+     * @return ValidationResult indicating the result of the validation
+     */
     private static ValidationResult validateAge(String ageText, TextField field) {
          try{
             int age = Integer.parseInt(ageText);
@@ -135,7 +183,12 @@ public class StudentValidator {
         return new ValidationResult(true, null, null);
     }
 
-    //Validate class name
+    /**
+     * Validates the class name input
+     * @param className the class name to validate
+     * @param field the TextField associated with the class name
+     * @return ValidationResult indicating the result of the validation
+     */
     private static ValidationResult validateClassName(String className, TextField field) {
          String cleanClassName = className.replaceAll("\\s+", "");
         if(!cleanClassName.matches("^[a-zA-Z][0-9]$") && !cleanClassName.matches("^[0-9][a-zA-Z]$")){
@@ -144,13 +197,21 @@ public class StudentValidator {
         return new ValidationResult(true, null, null);
     }
 
-    //Format name
+    /**
+     * Formats the name by capitalizong the first letter and correcting spacing around hyphens
+     * @param name the name to format
+     * @return the formatted name
+     */
     private static String formatName(String name){
         name = name.replaceAll("\\s*-\\s*", "-");
         return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
-    //Format class name
+    /**
+     * Formats the class name by correcting spacing and capitalization
+     * @param className the class name to format
+     * @return the formatted class name
+     */
     private static String formatClassName(String className){
         className = className.replaceAll("\\s+", "");
         if (className.matches("^[a-zA-Z][0-9]$")) {
@@ -160,7 +221,14 @@ public class StudentValidator {
         }
     }
 
-    //Create a new student with validate fields
+    /**
+     * Creates a Sudent object form the provided TextFields
+     * @param firstNameField the TextField for the first name
+     * @param lastNameField the TextField for the last name
+     * @param ageField the TextField for age
+     * @param classNameField the TextField for class name
+     * @return a new Student object populated with the provided data
+     */
     public static Student createStudentFromFields(TextField firstNameField, TextField lastNameField, 
                                                  TextField ageField, TextField classNameField) {
         Student student = new Student();
