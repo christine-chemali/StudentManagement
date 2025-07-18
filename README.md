@@ -1681,7 +1681,704 @@ The Service layer contains business logic and orchestrates calls to the DAOs
 +--------------------------------------------------+
 
 ```
+### UML Class Diagram 
 
+```mermaid
+classDiagram
+    class Student {
+        +Long studentId
+        +String firstName
+        +String lastName
+        +int age
+        +String className
+        +double averageGrade
+        +Student()
+        +Student(String, String, int)
+        +Long getStudentId()
+        +String getFirstName()
+        +void setFirstName(String)
+        +String getLastName()
+        +void setLastName(String)
+        +double getAverageGrade()
+        +void setAverageGrade(double)
+        +int getAge()
+        +void setAge(int)
+        +String getFullName()
+        +String getStudentClassName()
+        +void setClassName(String)
+        +String toString()
+    }
+
+    class Grade {
+        +Long id
+        +Long studentId
+        +String subject
+        +double value
+        +double coefficient
+        +Date date
+        +Grade()
+        +Grade(Long, String, double, double)
+        +Long getGradeId()
+        +Long getStudentId()
+        +void setStudentId(Long)
+        +String getSubject()
+        +void setSubject(String)
+        +double getValue()
+        +void setValue(double)
+        +double getCoefficient()
+        +void setCoefficient(double)
+        +Date getDate()
+        +void setDate(Date)
+        +double getWeightedGradeValue()
+        +String toString()
+    }
+
+    class SubjectComment {
+        +Long id
+        +Long studentId
+        +String subject
+        +String comment
+        +SubjectComment()
+        +Long getId()
+        +Long getStudentId()
+        +String getSubject()
+        +String getComment()
+        +void setComment(String)
+        +String toString()
+    }
+
+    class User {
+        +Long id
+        +String username
+        +String passwordHash
+        +User()
+        +User(String, String)
+        +Long getUserId()
+        +String getUsername()
+        +void setUsername(String)
+        +String getPasswordHash()
+        +void setPasswordHash(String)
+        +String toString()
+    }
+
+    class SearchCriteria {
+        +String searchValue
+        +int pageNumber
+        +int pageSize
+        +String sortField
+        +String sortDirection
+        +SearchCriteria()
+        +SearchCriteria(String)
+        +String getSearchValue()
+        +void setSearchValue(String)
+        +int getPageNumber()
+        +void setPageNumber(int)
+        +int getPageSize()
+        +void setPageSize(int)
+        +String getSortField()
+        +void setSortField(String)
+        +String getSortDirection()
+        +void setSortDirection(String)
+        +int getOffset()
+        +String toString()
+        +boolean equals(Object)
+        +int hashCode()
+    }
+
+    class SubjectResult {
+        +String subject
+        +String grades
+        +double studentAverage
+        +double classMinAverage
+        +double classMaxAverage
+        +String teacherComment
+        +SubjectResult()
+        +SubjectResult(String, String, double, double, double, String)
+        +String getSubject()
+        +void setSubject(String)
+        +String getGrades()
+        +void setGrades(String)
+        +double getStudentAverage()
+        +void setStudentAverage(double)
+        +double getClassMinAverage()
+        +void setClassMinAverage(double)
+        +double getClassMaxAverage()
+        +void setClassMaxAverage(double)
+        +String getTeacherComment()
+        +void setTeacherComment(String)
+        +String toString()
+    }
+
+    class ValidationResult {
+        +boolean valid
+        +String errorMessage
+        +Object focusField
+        +ValidationResult(boolean, String, Object)
+        +boolean isValid()
+        +String getErrorMessage()
+        +Object getFocusField()
+    }
+
+    class BaseDAO~T~ {
+        +Connection connection
+        +BaseDAO(Connection)
+        +T mapResultSet(ResultSet)
+        +int count(String)
+        +void closeResources(ResultSet, PreparedStatement)
+    }
+
+    class StudentDAO {
+        <<interface>>
+        +void save(Student)
+        +Student findStudentById(Long)
+        +List~Student~ findAllStudents()
+        +void updateStudent(Student)
+        +void deleteStudent(Long)
+        +List~Student~ searchGeneral(SearchCriteria)
+        +long countSearchGeneral(SearchCriteria)
+    }
+
+    class StudentDAOImpl {
+        +Connection connection
+        +DatabaseConnection dbConnection
+        +StudentDAOImpl(Connection)
+        +void saveStudent(Student)
+        +Student findStudentById(Long)
+        +List~Student~ findAllStudents()
+        +void updateStudent(Student)
+        +void deleteStudent(Long)
+        +List~Student~ searchGeneral(SearchCriteria)
+        +long countSearchGeneral(SearchCriteria)
+        +long count()
+        -Student mapResultSetToStudent(ResultSet)
+    }
+
+    class GradeDAO {
+        <<interface>>
+        +void saveGrade(Grade)
+        +void updateGrade(Grade)
+        +void deleteGrade(Long)
+        +void saveCoefficient(double)
+        +void updateCoefficient(Long, double)
+        +double getMinAverageBySubject(String)
+        +double getMaximumAverageBySubject(String)
+        +List~SubjectResult~ searchBySubject(Long, SearchCriteria)
+        +long countBySubject(Long, String)
+        +double calculateWeightedAverageGrade(Long)
+        +long count()
+    }
+
+    class GradeDAOImpl {
+        +Connection connection
+        +DatabaseConnection dbConnection
+        +GradeDAOImpl(Connection)
+        +void saveGrade(Grade)
+        +void updateGrade(Grade)
+        +void deleteGrade(Long)
+        +void saveCoefficient(double)
+        +void updateCoefficient(Long, double)
+        +double getMinAverageBySubject(String)
+        +double getMaximumAverageBySubject(String)
+        +List~SubjectResult~ searchBySubject(Long, SearchCriteria)
+        +long countBySubject(Long, String)
+        +double calculateWeightedAverageGrade(Long)
+        -Grade mapResultSetToGrade(ResultSet)
+    }
+
+    class SubjectCommentDAO {
+        <<interface>>
+        +void saveComment(SubjectComment)
+        +void updateComment(SubjectComment)
+        +void deleteComment(Long)
+        +List~SubjectComment~ findCommentsByStudentAndSubject(Long, String)
+    }
+
+    class SubjectCommentDAOImpl {
+        +Connection connection
+        +DatabaseConnection dbConnection
+        +SubjectCommentDAOImpl(Connection)
+        +void saveComment(SubjectComment)
+        +void updateComment(SubjectComment)
+        +void deleteComment(Long)
+        +List~SubjectComment~ findCommentsByStudentAndSubject(Long, String)
+        -SubjectComment mapResultSetToComment(ResultSet)
+    }
+
+    class UserDAO {
+        <<interface>>
+        +void saveUser(User)
+        +User findUserByUsername(String)
+        +boolean authenticateUser(String, String)
+    }
+
+    class UserDAOImpl {
+        +Connection connection
+        +DatabaseConnection dbConnection
+        +UserDAOImpl(Connection)
+        +void saveUser(User)
+        +User findUserByUsername(String)
+        +boolean authenticateUser(String, String)
+        -User mapResultSetToUser(ResultSet)
+    }
+
+    class DatabaseConnection {
+        +String url
+        +String username
+        +String password
+        +Connection connection
+        +DatabaseConnection()
+        +void connect()
+        +void disconnect()
+        +Connection getConnection()
+        +boolean isConnected()
+        +ResultSet executeQuery(String)
+        +void executeUpdate(String)
+        +void executeSafeQuery(String, List~Object~)
+        +void closeResources()
+    }
+
+    class DatabaseConfig {
+        +Properties properties
+        +String configFile
+        +DatabaseConfig()
+        +void loadConfig()
+        +String getDatabaseUrl()
+        +String getDatabaseUsername()
+        +String getDatabasePassword()
+    }
+
+    class StudentService {
+        +StudentDAO studentDAO
+        +InputValidator validator
+        +StudentService(StudentDAO, InputValidator)
+        +void createStudent(Student)
+        +Student getStudentByID(Long)
+        +List~Student~ getAllStudents()
+        +void updateStudent(Student)
+        +void deleteStudent(Long)
+        +List~Student~ searchStudents(SearchCriteria)
+    }
+
+    class GradeService {
+        +GradeDAO gradeDAO
+        +GradeService(GradeDAO)
+        +List~SubjectResult~ searchBySubject(Long, SearchCriteria)
+    }
+
+    class StatisticsService {
+        +StudentDAO studentDAO
+        +GradeDAO gradeDAO
+        +StatisticsService(StudentDAO, GradeDAO)
+        +double calculateClassAverageBySubject(String)
+        +Map~String, Long~ getStudentCountByAgeGroup()
+        +Map~String, List~Double~~ getGradeDistributionBySubject(String)
+        +List~Student~ getTopPerformers(int)
+        +Map~String, Object~ getStudentStatistics()
+        +double getMinAverageBySubject(String)
+        +double getMaximumAverageBySubject(String)
+        +double calculateWeightedAverageGrade()
+    }
+
+    class AuthenticationService {
+        +UserDAO userDAO
+        +User currentUser
+        +AuthenticationService(UserDAO)
+        +boolean authenticate(String, String)
+        +void register(User)
+        +boolean isAuthenticated()
+        +User getCurrentUser()
+        +void setCurrentUser(User)
+    }
+
+    class SubjectCommentService {
+        +SubjectCommentDAO commentDAO
+        +SubjectCommentService(SubjectCommentDAO)
+        +void saveComment(SubjectComment)
+        +void updateComment(SubjectComment)
+        +void deleteComment(Long)
+        +List~SubjectComment~ findCommentsByStudentAndSubject(Long, String)
+    }
+
+    class ImportExportService {
+        +CSVHandler csvHandler
+        +PDFExporter pdfExporter
+        +ImportExportService()
+        +void exportToCSV(List~Student~)
+        +void exportToPDF()
+    }
+
+    class BackupService {
+        +DatabaseConnection databaseConnection
+        +StudentDAO studentDAO
+        +BackupService(DatabaseConnection, StudentDAO)
+        +void createBackup()
+        +void restoreBackup()
+        +void scheduleAutoBackup()
+        +void stopAutoBackup()
+        +List~String~ listBackups()
+        +void deleteBackup(String)
+        -void compressBackup(String)
+        -void extractBackup(String)
+    }
+
+    class AlertUtils {
+        +String CSS_FILE
+        +void applyCustomStyle(Alert)
+        +void showAlert(String, String)
+        +void showError(String, String)
+        +void showWarning(String, String)
+        +void showInformation(String, String)
+    }
+
+    class DialogUtils {
+        +DialogField createDialogField(String, String)
+        +void showEditDialog(String, List~DialogField~, Consumer~List~DialogField~~, Function~List~DialogField~, String~)
+        +void showTextAreaDialog(String, TextAreaField, Button)
+        +void showDeleteConfirmation(String, String, Runnable)
+        +TableColumn createActionColumn(String, String, Consumer)
+        +void setupColumnSorting(TableView, Runnable)
+    }
+
+    class GradeValidator {
+        +ValidationResult validateGradeInput(TextField, TextField)
+        +ValidationResult checkForChanges(double, double, TextField, TextField)
+        +Grade createGradeFromFields(Long, String, TextField, TextField)
+        +SubjectComment createCommentFromField(Long, String, TextArea)
+    }
+
+    class PasswordUtils {
+        +String generateSalt()
+        +String hashPassword(String, String)
+        +String hashPasswordWithSalt(String)
+        +boolean verifyPassword(String, String)
+        +boolean validatePasswordStrength(String)
+        +String getPasswordCriteria()
+    }
+
+    class CSVHandler {
+        +char delimiter
+        +CSVHandler()
+        +CSVHandler(char)
+        +void exportGeneralSearchResults(List)
+        +void exportStudentSearchResults(List)
+        +boolean validateCSVFormat(String)
+        +Student parseStudentFromCSV(String)
+        +String formatStudentToCSV(Student)
+    }
+
+    class PDFExporter {
+        +Document document
+        +PdfWriter writer
+        +PDFExporter()
+        +void exportStatisticsGeneralGraph()
+        +void exportStatisticsStudentGraph()
+        +void formatStudentData(Student)
+        +void addHeader()
+        +void addFooter()
+    }
+
+    class SceneUtils {
+        +T changeScene(Stage, String, String)
+    }
+
+    class StudentValidator {
+        +ValidationResult validateForCreation(TextField, TextField, TextField, TextField)
+        +ValidationResult validateAndApplyChanges(Student, TextField, TextField, TextField, TextField)
+        +ValidationResult validateFirstName(String, TextField)
+        +ValidationResult validateLastName(String, TextField)
+        +ValidationResult validateAge(String, TextField)
+        +ValidationResult validateClassName(String, TextField)
+        +String formatName(String)
+        +String formatClassName(String)
+        +Student createStudentFromFields(TextField, TextField, TextField, TextField)
+    }
+
+    class InputValidator {
+        +ValidationResult validateStudentInput(TextField, TextField, TextField, TextField)
+    }
+
+    class BaseTableController~T~ {
+        +TextField searchField
+        +Button searchButton
+        +Button exportButton
+        +Button importButton
+        +TableView~T~ dataTable
+        +Pagination pagination
+        +ImportExportService importExportService
+        +int ROWS_PER_PAGE
+        +void initialize()
+        +void initializeServices()
+        +void setupTableResizing()
+        +void refreshTableRowHeights()
+        +void autoResizeTable()
+        +void setupColumnSizing()
+        +void setupPagination()
+        +void setupSearchAndExport()
+        +void setupImport()
+        +void setupColumnSorting()
+        +void loadInitialData()
+        +void handleSearch()
+        +void handleExport()
+        +void loadDataPage(int)
+        +int calculatePageCount()
+        +SearchCriteria createSearchCriteria()
+        +String extractSortField(TableColumn)
+        +void refreshTable()
+        +void refreshTableFromStart()
+        +void setupTableColumns()*
+        +List~T~ searchData(SearchCriteria)*
+        +void exportToCSV(List~T~, File)*
+        +int getTotalCount(SearchCriteria)*
+        +void handleImport()*
+        +void setImportExportService(ImportExportService)
+    }
+
+    class LoginController {
+        +AuthenticationService authService
+        +TextField textFieldUsername
+        +TextField textFieldPassword
+        +Button buttonLogin
+        +Button buttonRegister
+        +void initialize()
+        +void handleLogin()
+        +void handleRegister()
+        +void showRegisterView()
+        +void showMainView()
+        +void clearForm()
+    }
+
+    class RegisterController {
+        +AuthenticationService authService
+        +TextField textFieldUsername
+        +TextField textFieldPassword
+        +TextField textFieldConfirmPassword
+        +Button buttonRegister
+        +Button buttonBackToLogin
+        +void initialize()
+        +void handleRegister()
+        +void handleBackToLogin()
+        +void showLogin()
+        +void clearForm()
+        +void setAuthService(AuthenticationService)
+    }
+
+    class StudentController {
+        +TextField studentIdField
+        +Label studentNameLabel
+        +Label studentClassLabel
+        +ComboBox~String~ subjectComboBox
+        +TextField gradeField
+        +TextField coefficientField
+        +Button addGradeButton
+        +TextArea commentArea
+        +Button addCommentButton
+        +Button okButton
+        +Button searchButton
+        +TableView~SubjectResult~ gradesTable
+        +TableColumn~SubjectResult, String~ subjectColumn
+        +TableColumn~SubjectResult, String~ gradesColumn
+        +TableColumn~SubjectResult, Number~ minAverageColumn
+        +TableColumn~SubjectResult, Number~ maxAverageColumn
+        +TableColumn~SubjectResult, Number~ studentAverageColumn
+        +TableColumn~SubjectResult, String~ commentsColumn
+        +StudentService studentService
+        +GradeService gradeService
+        +SubjectCommentService commentService
+        +Student currentStudent
+        +List~String~ subjects
+        +void initialize()
+        +void setupColumnSizing()
+        +void setupTableColumns()
+        +void handleLoadStudent()
+        +void handleAddGrade()
+        +void handleAddComment()
+        +void handleSort()
+        +void showGradeEditDialog(String, String)
+        +void showGradeDeleteConfirmation(String, String)
+        +void showCommentEditDialog(String, String)
+        +void showCommentDeleteConfirmation(String)
+        +void disableGradeControls(boolean)
+        +List~SubjectResult~ searchData(SearchCriteria)
+        +int getTotalCount(SearchCriteria)
+        +void exportToCSV(List~SubjectResult~, File)
+        +void handleImport()
+        +void setStudentService(StudentService)
+        +void setGradeService(GradeService)
+        +void setCommentService(SubjectCommentService)
+    }
+
+    class StudentsController {
+        +StudentService studentService
+        +ImportExportService importExportService
+        +TextField searchField
+        +TableView~Student~ studentTable
+        +Pagination pagination
+        +TextField firstNameField
+        +TextField lastNameField
+        +TextField ageField
+        +TextField classNameField
+        +int ROWS_PER_PAGE
+        +void initialize()
+        +void handleSearch()
+        +void handleImport()
+        +void handleExport()
+        +void handleAddStudent()
+        +void loadStudentsPage(int)
+        +int calculatePageCount()
+        +void showEditDialog(Student)
+        +void showDeleteConfirmation(Student)
+        +void setupEditColumn()
+        +void setupDeleteColumn()
+        +void setupColumnSorting()
+        +void setupTableColumns()
+        +void clearAddForm()
+        +void setStudentService(StudentService)
+        +void setImportExportService(ImportExportService)
+    }
+
+    class StudentStatsController {
+        +Label studentNameLabel
+        +ComboBox~String~ subjectComboBox
+        +LineChart~String, Number~ gradeChart
+        +CategoryAxis dateAxis
+        +NumberAxis gradeAxis
+        +Label noDataLabel
+        +Button refreshButton
+        +Button exportButton
+        +List~String~ subjects
+        +StatisticsService statisticsService
+        +Student currentStudent
+        +void initialize()
+        +void setCurrentStudent(Student)
+        +void updateGradeChart(String)
+        +void handleRefresh()
+        +void handleExport()
+        +void setStatisticsService(StatisticsService)
+    }
+
+    class StudentsStatsController {
+        +PieChart ageChart
+        +Label noDataLabel
+        +Button refreshButton
+        +Button exportButton
+        +StatisticsService statisticsService
+        +void initialize()
+        +void loadStatistics()
+        +void updateAgeDistributionChart()
+        +void handleRefresh()
+        +void handleExport()
+        +void setStatisticsService(StatisticsService)
+    }
+
+    class TabController {
+        +void initialize()
+        +void handleButtonAction()
+    }
+
+    class WelcomeController {
+        +Label usernameLabel
+        +User currentUser
+        +void initialize()
+        +void setCurrentUser(User)
+        +void updateUI()
+    }
+
+    class BackupController {
+        +BackupService backupService
+        +void handleCreateBackup()
+        +void handleRestoreBackup()
+        +void handleAutoBackupSchedule()
+        +void showBackupList()
+        +void handleDeleteBackup()
+    }
+
+    class Main {
+        +void start(Stage)
+        +void main(String[])
+    }
+
+    %% Relations entre entités de domaine
+    Student "1" --> "0..*" Grade : has
+    Student "1" --> "0..*" SubjectComment : has
+    User "1" --> "0..*" SubjectComment : creates
+
+    %% Relations DAO-Interface
+    StudentDAOImpl ..|> StudentDAO : implements
+    GradeDAOImpl ..|> GradeDAO : implements
+    SubjectCommentDAOImpl ..|> SubjectCommentDAO : implements
+    UserDAOImpl ..|> UserDAO : implements
+
+    %% Héritage DAO
+    StudentDAOImpl --|> BaseDAO : extends
+    GradeDAOImpl --|> BaseDAO : extends
+    SubjectCommentDAOImpl --|> BaseDAO : extends
+    UserDAOImpl --|> BaseDAO : extends
+
+    %% Relations Service vers DAO
+    StudentService --> StudentDAO : uses
+    StudentService --> InputValidator : uses
+    GradeService --> GradeDAO : uses
+    StatisticsService --> StudentDAO : uses
+    StatisticsService --> GradeDAO : uses
+    AuthenticationService --> UserDAO : uses
+    SubjectCommentService --> SubjectCommentDAO : uses
+    BackupService --> DatabaseConnection : uses
+    BackupService --> StudentDAO : uses
+    ImportExportService --> CSVHandler : uses
+    ImportExportService --> PDFExporter : uses
+
+    %% Relations Controller vers Service
+    LoginController --> AuthenticationService : uses
+    RegisterController --> AuthenticationService : uses
+    StudentController --> StudentService : uses
+    StudentController --> GradeService : uses
+    StudentController --> SubjectCommentService : uses
+    StudentsController --> StudentService : uses
+    StudentsController --> ImportExportService : uses
+    StudentStatsController --> StatisticsService : uses
+    StudentsStatsController --> StatisticsService : uses
+    BackupController --> BackupService : uses
+    WelcomeController --> User : displays
+    TabController --> SceneUtils : uses
+    Main --> LoginController : launches
+
+    %% Héritage Controller
+    StudentsController --|> BaseTableController : extends
+    StudentController --|> BaseTableController : extends
+
+    %% Relations des utilitaires
+    DialogUtils --> GradeValidator : uses
+    DialogUtils --> AlertUtils : uses
+    GradeValidator --> ValidationResult : creates
+    StudentValidator --> ValidationResult : creates
+    InputValidator --> ValidationResult : creates
+    InputValidator --> StudentValidator : delegates
+    PDFExporter --> Student : formats
+    CSVHandler --> Student : formats
+    SceneUtils --> BaseTableController : manages
+    RegisterController --> PasswordUtils : uses
+    AuthenticationService --> PasswordUtils : uses
+
+    %% Relations database
+    DatabaseConnection --> DatabaseConfig : uses
+    StudentDAOImpl --> DatabaseConnection : uses
+    GradeDAOImpl --> DatabaseConnection : uses
+    SubjectCommentDAOImpl --> DatabaseConnection : uses
+    UserDAOImpl --> DatabaseConnection : uses
+
+    %% Relations avec SearchCriteria
+    BaseTableController --> SearchCriteria : creates
+    StudentService --> SearchCriteria : uses
+    GradeService --> SearchCriteria : uses
+    StudentDAO --> SearchCriteria : uses
+    GradeDAO --> SearchCriteria : uses
+
+    %% Relations avec SubjectResult
+    GradeDAO --> SubjectResult : creates
+    GradeService --> SubjectResult : creates
+    StudentController --> SubjectResult : displays
+
+```
 ### Directory Structure
 * * *
 
