@@ -179,6 +179,27 @@ public class StudentControllerUnitTest {
         }
     }
 
+    @Test
+    /**
+     * Tests the functionnality of loading a student when the student ID does not correspond to any existing student
+     * @throws Exception if an error occurs during test execution
+     */
+    public void testHandleLoadStudentNotFound() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)) {
+            long studentId = 999L;
+            
+            when(studentIdFieldMock.getText()).thenReturn(String.valueOf(studentId));
+            when(studentServiceMock.getStudentByID(studentId)).thenReturn(null);
+            
+            Method handleLoadStudentMethod = StudentController.class.getDeclaredMethod("handleLoadStudent");
+            handleLoadStudentMethod.setAccessible(true);
+            handleLoadStudentMethod.invoke(studentController);
+            
+            verify(studentServiceMock).getStudentByID(studentId);
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), eq("Aucun étudiant trouvé avec cet ID.")));
+        }
+    }
+
     /**
      * Injects a value into a private field of the specified target object
      * @param target the object containing the field to inject to
