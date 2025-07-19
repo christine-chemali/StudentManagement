@@ -3,6 +3,7 @@ package com.studentmanagement.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -25,6 +26,7 @@ import org.mockito.quality.Strictness;
 
 import com.studentmanagement.model.Grade;
 import com.studentmanagement.model.Student;
+import com.studentmanagement.model.SubjectComment;
 import com.studentmanagement.service.GradeService;
 import com.studentmanagement.service.StudentService;
 import com.studentmanagement.service.SubjectCommentService;
@@ -300,6 +302,34 @@ public class StudentControllerUnitTest {
             handleAddGradeMethod.invoke(studentController);
             
             alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), eq("Note invalide")));
+        }
+    }
+
+  @Test
+  /**
+   * Tests the functionality of successfully adding a comment for a student.
+   * @throws Exception if an error occurs during the test excecution
+   */
+    public void testHandleAddCommentSuccess() throws Exception {
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)) {
+
+            injectField(studentController, "currentStudent", testStudent);
+
+            when(subjectComboBoxMock.getValue()).thenReturn("Potions");
+            when(commentAreaMock.getText()).thenReturn("A réussi à créer une potion qui a explosé ! Prometteur, mais peut-être un peu trop d'energie a dépenser ...");
+            
+            //Create a spy of the controller to mock refreshTable
+            StudentController spyController = spy(studentController);
+            doNothing().when(spyController).refreshTable();
+            
+            //Call the method on the spy
+            Method handleAddCommentMethod = StudentController.class.getDeclaredMethod("handleAddComment");
+            handleAddCommentMethod.setAccessible(true);
+            handleAddCommentMethod.invoke(spyController);
+            
+            verify(commentServiceMock).saveComment(any(SubjectComment.class));
+            verify(commentAreaMock).clear();
+            alertUtilsMock.verify(() -> AlertUtils.showInformation(eq("Succès"), eq("Le commentaire a été ajouté avec succès.")));
         }
     }
 
