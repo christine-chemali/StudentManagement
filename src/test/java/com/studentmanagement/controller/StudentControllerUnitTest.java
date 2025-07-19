@@ -33,6 +33,7 @@ import com.studentmanagement.service.SubjectCommentService;
 import com.studentmanagement.utils.AlertUtils;
 import com.studentmanagement.utils.GradeValidator;
 
+import javafx.application.Platform;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
@@ -406,6 +407,37 @@ public class StudentControllerUnitTest {
         studentController.setCommentService(newService);
         
         assertNotNull(newService);
+    }
+
+    @Test
+    /**
+     * Tests the functionality of handling sorting in the StudentController.
+     * @throws Exception if an error occurs during the test execution
+     */
+    public void testHandleSort() throws Exception{
+        try (MockedStatic<Platform> platformMock = mockStatic(Platform.class)){
+
+            injectField(studentController, "currentStudent", testStudent);
+            
+            //Configure Platform.runLater to execute immediately
+            platformMock.when(() -> Platform.runLater(any(Runnable.class)))
+                      .thenAnswer(invocation -> {
+                          Runnable runnable = invocation.getArgument(0);
+                          runnable.run();
+                          return null;
+                      });
+            
+            //Create a spy of the controller to mock refreshTable
+            StudentController spyController = spy(studentController);
+            doNothing().when(spyController).refreshTable();
+            
+            Method handleSortMethod = StudentController.class.getDeclaredMethod("handleSort");
+            handleSortMethod.setAccessible(true);
+            handleSortMethod.invoke(spyController);
+            
+            //Verify that refreshTable has been called
+            verify(spyController).refreshTable();
+        }
     }
 
     /**
