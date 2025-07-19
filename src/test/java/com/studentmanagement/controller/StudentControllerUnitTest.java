@@ -4,7 +4,10 @@ package com.studentmanagement.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,11 +23,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import com.studentmanagement.model.Grade;
 import com.studentmanagement.model.Student;
 import com.studentmanagement.service.GradeService;
 import com.studentmanagement.service.StudentService;
 import com.studentmanagement.service.SubjectCommentService;
 import com.studentmanagement.utils.AlertUtils;
+import com.studentmanagement.utils.GradeValidator;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -199,6 +204,56 @@ public class StudentControllerUnitTest {
             alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), eq("Aucun étudiant trouvé avec cet ID.")));
         }
     }
+
+    @Test
+    /**
+     * Tests the functionnality of successfuly adding a grade for a student
+     * @throws Exception if an error occurs during the test execution
+     */
+    public void testHandleAddGradeSuccess() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class);
+             MockedStatic<GradeValidator> gradeValidatorMock = mockStatic(GradeValidator.class)){
+            
+            injectField(studentController, "currentStudent", testStudent);
+            
+            when(subjectComboBoxMock.getValue()).thenReturn("Métamorphoses");
+            when(gradeFieldMock.getText()).thenReturn("15.5");
+            when(coefficientFieldMock.getText()).thenReturn("2.0");
+            
+            //Create a valid validation result
+            GradeValidator.ValidationResult validResult = mock(GradeValidator.ValidationResult.class);
+            when(validResult.isValid()).thenReturn(true);
+            
+            //Create a test grade
+            Grade testGrade = new Grade();
+            testGrade.setStudentId(testStudent.getStudentId());
+            testGrade.setSubject("Métamorphoses");
+            testGrade.setValue(15.5);
+            testGrade.setCoefficient(2.0);
+            
+            //Configure the mocks statics
+            gradeValidatorMock.when(() -> GradeValidator.validateGradeInput(gradeFieldMock, coefficientFieldMock))
+                             .thenReturn(validResult);
+            gradeValidatorMock.when(() -> GradeValidator.createGradeFromFields(
+                testStudent.getStudentId(), "Métamorphoses", gradeFieldMock, coefficientFieldMock))
+                             .thenReturn(testGrade);
+            
+            //Create a spy of the controller to mock refreshTable
+            StudentController spyController = spy(studentController);
+            doNothing().when(spyController).refreshTable();
+            
+            //Call the method on the spy
+            Method handleAddGradeMethod = StudentController.class.getDeclaredMethod("handleAddGrade");
+            handleAddGradeMethod.setAccessible(true);
+            handleAddGradeMethod.invoke(spyController);
+
+            verify(gradeServiceMock).saveGrade(testGrade);
+            verify(gradeFieldMock).clear();
+            verify(coefficientFieldMock).clear();
+            alertUtilsMock.verify(() -> AlertUtils.showInformation(eq("Succès"), eq("La note a été ajoutée avec succès.")));
+        }
+    }
+
 
     /**
      * Injects a value into a private field of the specified target object
