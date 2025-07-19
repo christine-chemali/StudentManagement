@@ -1,13 +1,20 @@
 package com.studentmanagement.controller;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -16,6 +23,7 @@ import com.studentmanagement.model.Student;
 import com.studentmanagement.service.GradeService;
 import com.studentmanagement.service.StudentService;
 import com.studentmanagement.service.SubjectCommentService;
+import com.studentmanagement.utils.AlertUtils;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -65,7 +73,13 @@ public class StudentControllerUnitTest {
     public void setUp() throws Exception{
         //Create the controller
         studentController = new StudentController();
+
         //Inject the mocked services
+        injectField(studentController, "studentService", studentServiceMock);
+        injectField(studentController, "gradeService", gradeServiceMock);
+        injectField(studentController, "commentService", commentServiceMock);
+        
+        //Injected the mocked UI components
         injectField(studentController, "studentIdField", studentIdFieldMock);
         injectField(studentController, "studentNameLabel", studentNameLabelMock);
         injectField(studentController, "studentClassLabel", studentClassLabelMock);
@@ -101,6 +115,34 @@ public class StudentControllerUnitTest {
         when(paginationMock.getCurrentPageIndex()).thenReturn(0);
     }
 
+    @Test
+    /**
+     * Tests the functionnality of loading a student with a valid student ID
+     * @throws Exception if an error occurs during the test execution
+     */
+    public void testHandleLoadStudentWithValidId() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+            long studentId = 123L;
+
+            when(studentIdFieldMock.getText()).thenReturn(String.valueOf(studentId));
+            when(studentServiceMock.getStudentByID(studentId)).thenReturn(testStudent);
+
+            Method handleLoadStudentMethod = StudentController.class.getDeclaredMethod("handleLoadStudent");
+            handleLoadStudentMethod.setAccessible(true);
+            handleLoadStudentMethod.invoke(studentController);
+
+            verify(studentServiceMock).getStudentByID(studentId);
+            verify(studentNameLabelMock).setText("Nom de l'étudiant : " + testStudent.getFullName());
+            verify(studentClassLabelMock).setText("Classe : " + testStudent.getClassName());
+
+            Field currentStudentField = StudentController.class.getDeclaredField("currentStudent");
+            currentStudentField.setAccessible(true);
+            Student currentStudent = (Student) currentStudentField.get(studentController);
+            assertNotNull(currentStudent);
+            assertEquals(testStudent.getFirstName(), currentStudent.getFirstName());
+            
+        }
+    }
 
     /**
      * Injects a value into a private field of the specified target object
