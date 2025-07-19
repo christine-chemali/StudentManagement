@@ -254,6 +254,26 @@ public class StudentControllerUnitTest {
         }
     }
 
+    
+    @Test
+    /**
+     * Tests the functionality of adding a grade when no subject is selected.
+     * @throws Exception if an error occurs during the test execution
+     */
+    public void testHandleAddGradeWithoutSubject() throws Exception {
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)) {
+
+            when(subjectComboBoxMock.getValue()).thenReturn(null);
+            
+            Method handleAddGradeMethod = StudentController.class.getDeclaredMethod("handleAddGrade");
+            handleAddGradeMethod.setAccessible(true);
+            handleAddGradeMethod.invoke(studentController);
+            
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), eq("Tu dois sélectionner une matière!")));
+        }
+    }
+
+
 
     /**
      * Injects a value into a private field of the specified target object
