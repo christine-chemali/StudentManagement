@@ -351,6 +351,28 @@ public class StudentControllerUnitTest {
         }
     }
 
+    @Test
+    /**
+     * Tests the functionality of adding a comment when the comment area is empty.
+     * @throws Exception if an error occurs during the test execution
+     */
+    public void testHandleAddCommentWithEmptyComment() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+
+            injectField(studentController, "currentStudent", testStudent);
+            
+            when(subjectComboBoxMock.getValue()).thenReturn("Potions");
+            when(commentAreaMock.getText()).thenReturn("   ");
+            
+            Method handleAddCommentMethod = StudentController.class.getDeclaredMethod("handleAddComment");
+            handleAddCommentMethod.setAccessible(true);
+            handleAddCommentMethod.invoke(studentController);
+            
+            alertUtilsMock.verify(() -> AlertUtils.showInformation(eq("Information"), 
+                eq("Il n'y a pas de commentaire à ajouter.\nRédiges-en un !")));
+            verify(commentAreaMock).requestFocus();
+        }
+    }
 
     /**
      * Injects a value into a private field of the specified target object
