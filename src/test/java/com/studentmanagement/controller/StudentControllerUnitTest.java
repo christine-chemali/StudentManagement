@@ -382,7 +382,6 @@ public class StudentControllerUnitTest {
         StudentService newService = mock(StudentService.class);
         studentController.setStudentService(newService);
         
-        // Verify that the service has been set
         assertNotNull(newService);
     }
 
@@ -394,9 +393,19 @@ public class StudentControllerUnitTest {
         GradeService newService = mock(GradeService.class);
         studentController.setGradeService(newService);
         
-        //Verify that the service has been set
         assertNotNull(newService);
         
+    }
+
+    @Test
+    /**
+     * Tests the functionality of setting a new CommentService in the StudentController.
+     */
+    public void testSetCommentService() {
+        SubjectCommentService newService = mock(SubjectCommentService.class);
+        studentController.setCommentService(newService);
+        
+        assertNotNull(newService);
     }
 
     /**
