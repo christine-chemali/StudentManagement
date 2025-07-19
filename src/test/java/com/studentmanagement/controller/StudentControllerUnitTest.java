@@ -333,7 +333,23 @@ public class StudentControllerUnitTest {
         }
     }
 
+    @Test
+    /**
+     * Tests the functionality of adding a comment when no subject is selected.
+     * @throws Exception if an error occurs during the test execution
+     */
+    public void testHandleAddCommentWithoutSubject() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
 
+            when(subjectComboBoxMock.getValue()).thenReturn(null);
+            
+            Method handleAddCommentMethod = StudentController.class.getDeclaredMethod("handleAddComment");
+            handleAddCommentMethod.setAccessible(true);
+            handleAddCommentMethod.invoke(studentController);
+            
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), eq("Sélectionne une matière !")));
+        }
+    }
 
 
     /**
