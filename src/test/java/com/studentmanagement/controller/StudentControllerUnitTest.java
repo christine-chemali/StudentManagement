@@ -162,6 +162,23 @@ public class StudentControllerUnitTest {
         }
     }
 
+    @Test
+    /**
+     * Tests the functionality of loading a student with an empty student ID
+     * @throws Exception if an error occurs during the test execution
+     */
+    public void testHandleLoadStudentWithEmptyId() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+            when(studentIdFieldMock.getText()).thenReturn("");
+
+            Method handleLoadStudentMethod = StudentController.class.getDeclaredMethod("handleLoadStudent");
+            handleLoadStudentMethod.setAccessible(true);
+            handleLoadStudentMethod.invoke(studentController);
+
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), eq("Tu dois remplir l'ID d'étudiant !")));
+        }
+    }
+
     /**
      * Injects a value into a private field of the specified target object
      * @param target the object containing the field to inject to
