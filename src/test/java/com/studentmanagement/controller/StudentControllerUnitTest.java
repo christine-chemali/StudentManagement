@@ -3,6 +3,7 @@ package com.studentmanagement.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -141,6 +142,23 @@ public class StudentControllerUnitTest {
             assertNotNull(currentStudent);
             assertEquals(testStudent.getFirstName(), currentStudent.getFirstName());
             
+        }
+    }
+
+    @Test
+    /**
+     * Tests the functionality of loading a student with an invalid student ID
+     * @throws Exception if an error occurs during the test execution
+     */
+    public void testHandleLoadStudentWithInvalidId() throws Exception {
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)){
+            when(studentIdFieldMock.getText()).thenReturn("Lumos");
+
+            Method handleLoadStudentMethod = StudentController.class.getDeclaredMethod("handleLoadStudent");
+            handleLoadStudentMethod.setAccessible(true);
+            handleLoadStudentMethod.invoke(studentController);
+            
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), eq("L'ID étudiant doit être un nombre entier.")));
         }
     }
 
