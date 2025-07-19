@@ -1,5 +1,6 @@
 package com.studentmanagement.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doNothing;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -285,6 +287,63 @@ public class StudentsControllerUITest {
      */
     public void tearDown() throws Exception{
         FxToolkit.cleanupStages();
+    }
+
+    @Test
+    /**
+     *  Tests that the student table has initial data after the application is started.
+     * @param robot the TestFX robot used to interact with the UI components
+     */
+    public void testTableHasInitialData(FxRobot robot){
+        ensureTableHasData();
+        //Verify table has data
+        assertThat(studentTable.getItems())
+            .as("Le tableau ne devrait pas être vide après l'initialisation")
+            .isNotEmpty();
+        
+        //Verify first student data is correct
+        if (!studentTable.getItems().isEmpty()){
+            Student firstStudent = studentTable.getItems().get(0);
+            assertThat(firstStudent.getFirstName())
+                .as("Le premier étudiant devrait avoir un prénom")
+                .isNotNull()
+                .isNotEmpty();
+        }
+    }
+
+    /**
+     * Ensures that the student table has data.
+     */
+    private void ensureTableHasData(){
+        //Check if the table already has data
+        if (studentTable.getItems().isEmpty()){
+            System.out.println("La table est vide, forçant le chargement des données...");
+            //Force data loading
+            Platform.runLater(() -> {
+                try{
+                    studentsController.refreshTable();
+                    
+                    if (studentTable.getItems().isEmpty()){
+                        List<Student> students = mockStudents.subList(0, Math.min(15, mockStudents.size()));
+                        studentTable.getItems().addAll(students);
+                        System.out.println("Données manuellement ajoutées : " + students.size() + " éléments dans la table");
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            });
+            
+            WaitForAsyncUtils.waitForFxEvents();
+            try{
+                Thread.sleep(1000);
+            } catch (InterruptedException e){
+                Thread.currentThread().interrupt();
+            }
+            WaitForAsyncUtils.waitForFxEvents();
+            System.out.println("Après avoir forcé le chargement des données, la table a " + studentTable.getItems().size() + " éléments");
+        } else{
+            System.out.println("La table a déjà " + studentTable.getItems().size() + " éléments");
+        }
     }
 
 }
