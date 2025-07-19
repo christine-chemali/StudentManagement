@@ -273,6 +273,37 @@ public class StudentControllerUnitTest {
         }
     }
 
+    @Test
+    /**
+     *  Tests the functionality of adding a grade with invalid input values.
+     * @throws Exception if an error occurs during the test execution
+     */
+    public void testHandleAddGradeWithInvalidInput() throws Exception {
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class);
+             MockedStatic<GradeValidator> gradeValidatorMock = mockStatic(GradeValidator.class)) {
+            
+            injectField(studentController, "currentStudent", testStudent);
+            
+            when(subjectComboBoxMock.getValue()).thenReturn("Métamorphoses");
+            
+            //Create an invalid validation result
+            GradeValidator.ValidationResult invalidResult = mock(GradeValidator.ValidationResult.class);
+            when(invalidResult.isValid()).thenReturn(false);
+            when(invalidResult.getErrorMessage()).thenReturn("Note invalide");
+            
+            //Configure the static mock
+            gradeValidatorMock.when(() -> GradeValidator.validateGradeInput(gradeFieldMock, coefficientFieldMock))
+                             .thenReturn(invalidResult);
+            
+            Method handleAddGradeMethod = StudentController.class.getDeclaredMethod("handleAddGrade");
+            handleAddGradeMethod.setAccessible(true);
+            handleAddGradeMethod.invoke(studentController);
+            
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), eq("Note invalide")));
+        }
+    }
+
+
 
 
     /**
