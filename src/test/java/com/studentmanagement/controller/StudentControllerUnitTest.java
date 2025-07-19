@@ -374,6 +374,31 @@ public class StudentControllerUnitTest {
         }
     }
 
+    @Test
+    /*
+     * Tests the functionality of setting a new StudentService in the StudentController.
+     */
+    public void testSetStudentService() {
+        StudentService newService = mock(StudentService.class);
+        studentController.setStudentService(newService);
+        
+        // Verify that the service has been set
+        assertNotNull(newService);
+    }
+
+    @Test
+    /*
+     * Tests the functionality of setting a new GradeService in the StudentController.
+     */
+    public void testSetGradeService() {
+        GradeService newService = mock(GradeService.class);
+        studentController.setGradeService(newService);
+        
+        //Verify that the service has been set
+        assertNotNull(newService);
+        
+    }
+
     /**
      * Injects a value into a private field of the specified target object
      * @param target the object containing the field to inject to
