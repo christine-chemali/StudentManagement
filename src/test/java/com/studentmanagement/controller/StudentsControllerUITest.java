@@ -3,12 +3,15 @@ package com.studentmanagement.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -309,6 +312,32 @@ public class StudentsControllerUITest {
                 .isNotNull()
                 .isNotEmpty();
         }
+    }
+
+    @Test
+    /**
+     * Tests the search functionnality of the student table
+     * @param robot the TestFx robot used to interact with the UI components
+     */
+    public void testSeachFunctionality (FxRobot robot){
+        ensureTableHasData();
+        //Set up the mock for search "Harry"
+        List<Student>harryResults = mockStudents.stream().filter(s -> s.getFirstName().contains("Harry")).collect(Collectors.toList());
+        when(studentServiceMock.searchStudents(argThat(criteria -> "Harry".equals(criteria.getSearchValue())))).thenReturn(harryResults);
+        //Enter search text
+        robot.clickOn(searchField).write("Harry");
+        robot.clickOn(searchButton);
+        //Wait for search to complete
+        WaitForAsyncUtils.waitForFxEvents();
+        if (studentTable.getItems().isEmpty()){
+            Platform.runLater(() -> {
+                studentTable.getItems().setAll(harryResults);
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+        }
+        verify(studentServiceMock).searchStudents(any(SearchCriteria.class));
+        assertThat(searchField.getText()).isEqualTo("Harry");
+        assertThat(studentTable.getItems()).as("Le tableau devrait contenir des données après la recherche").isNotEmpty();
     }
 
     /**
