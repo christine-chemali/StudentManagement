@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -371,6 +372,22 @@ public class StudentsControllerUITest {
         } else{
             assertThat(pagination).isNotNull();
         }
+    }
+
+    @Test
+    /**
+     * Tests the functionnality of adding a student with an invalid age
+     * @param robot the TestFx robot used to interact with the UI components
+     */
+    public void testAddStudentInvalidAge(FxRobot robot){
+        //Fill in data with invalid age
+        robot.clickOn(firstNameField).write("Drago");
+        robot.clickOn(lastNameField).write("Malefoy");
+        robot.clickOn(ageField).write("sss");
+        robot.clickOn(classNameField).write("3A");
+        robot.clickOn(addButton);
+        WaitForAsyncUtils.waitForFxEvents();
+        verify(studentServiceMock, never()).createStudent(any(Student.class));
     }
 
     @Test
