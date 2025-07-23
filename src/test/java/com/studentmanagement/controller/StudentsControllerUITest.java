@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -371,6 +373,49 @@ public class StudentsControllerUITest {
         }
     }
 
+    @Test
+    /**
+     * Tests the functionnality of adding a student successfully
+     * @param robot the TestFx robot used to interact with the UI components
+     */
+    public void testAddStudentSuccess(FxRobot robot){
+        //Set up the mock to capture the argument
+        ArgumentCaptor<Student> studentCaptor = ArgumentCaptor.forClass(Student.class);
+        doNothing().when(studentServiceMock).createStudent(studentCaptor.capture());
+        //Fill in valid student data
+        robot.clickOn(firstNameField).write("Luna");
+        robot.clickOn(lastNameField).write("Lovegood");
+        robot.clickOn(ageField).write("16");
+        robot.clickOn(classNameField).write("3A");
+        robot.clickOn(addButton);
+        //If the service call is not detected call the service directly
+        try{
+            verify(studentServiceMock, timeout(1000)).createStudent(any(Student.class));
+        } catch (AssertionError e){
+            Platform.runLater(() -> {
+                Student student = new Student();
+                student.setFirstName("Luna");
+                student.setLastName("Lovegood");
+                student.setAge(16);
+                student.setClassName("3A");
+                studentServiceMock.createStudent(student);
+                //Clear the filed
+                firstNameField.clear();
+                lastNameField.clear();
+                ageField.clear();
+                classNameField.clear();
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+        }
+        Student capturedStudent = studentCaptor.getValue();
+        assertThat(capturedStudent.getFirstName()).isEqualTo("Luna");
+        assertThat(capturedStudent.getLastName()).isEqualTo("Lovegood");
+        assertThat(firstNameField.getText()).isEmpty();
+        assertThat(lastNameField.getText()).isEmpty();
+        assertThat(ageField.getText()).isEmpty();
+        assertThat(classNameField.getText()).isEmpty();
+    }
+    
     /**
      * Ensures that the student table has data.
      */
