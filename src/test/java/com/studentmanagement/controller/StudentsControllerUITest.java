@@ -432,7 +432,34 @@ public class StudentsControllerUITest {
         assertThat(ageField.getText()).isEmpty();
         assertThat(classNameField.getText()).isEmpty();
     }
-    
+
+    @Test
+    /**
+     * Tests that the data in the student table is displayed correctly.
+     * @param robot the TestFx robot that used to interact with the UI components
+     */
+    public void testTableDataIsDisplayed(FxRobot robot){
+        ensureTableHasData();
+        assertThat(studentTable.getItems()).as("Le tableau ne devrait pas être vide").isNotEmpty();
+        assertThat(studentTable.getItems().size()).as("Le tableau devrait avoir au moins %d objets par page", ROWS_PER_PAGE).isLessThanOrEqualTo(ROWS_PER_PAGE);
+        if (studentTable.getItems().size() >= 3) {
+            Student firstStudent = studentTable.getItems().get(0);
+            assertThat(firstStudent.getFirstName())
+                .as("Le prénom du premier élève devrait être Harry")
+                .isEqualTo("Harry");
+            assertThat(firstStudent.getLastName())
+                .as("Le nom de famille de l'élève devrait être Potter")
+                .isEqualTo("Potter");
+            Student secondStudent = studentTable.getItems().get(1);
+            assertThat(secondStudent.getFirstName())
+                .as("Le prénom du second élève devrait être Hermione")
+                .isEqualTo("Hermione");
+            assertThat(secondStudent.getLastName())
+                .as("Le nom de famille du second élève devrait être Granger")
+                .isEqualTo("Granger");
+        }
+    }
+
     /**
      * Ensures that the student table has data.
      */
