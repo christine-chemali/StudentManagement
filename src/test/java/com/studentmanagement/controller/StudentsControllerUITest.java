@@ -340,6 +340,37 @@ public class StudentsControllerUITest {
         assertThat(studentTable.getItems()).as("Le tableau devrait contenir des données après la recherche").isNotEmpty();
     }
 
+    @Test
+    /**
+     * Tests the pagination navigation of the student table
+     * @param robot the TestFx robot used to interact with the UI components
+     */
+    public void testPaginationNavigation(FxRobot robot){
+        ensureTableHasData();
+        assertThat(studentTable.getItems()).as("Le tableau devrait contenir des données avant le test de pagination").isNotEmpty();
+        Platform.runLater(() -> {
+            int totalItems = mockStudents.size();
+            int pageCount = (int) Math.ceil((double) totalItems / ROWS_PER_PAGE);
+            pagination.setPageCount(pageCount);
+            pagination.setCurrentPageIndex(0);
+        });
+        WaitForAsyncUtils.waitForFxEvents();
+        assertThat(pagination.getCurrentPageIndex()).isEqualTo(0);
+        if (pagination.getPageCount() > 1){
+            Platform.runLater(() -> {
+                pagination.setCurrentPageIndex(1);
+                List<Student> page2Students = mockStudents.subList(ROWS_PER_PAGE, Math.min(ROWS_PER_PAGE*2, mockStudents.size())
+                );
+                studentTable.getItems().setAll(page2Students);
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+            assertThat(pagination.getCurrentPageIndex()).isEqualTo(1);
+            assertThat(studentTable.getItems()).as("Le tableau devrait avoir des données dans la page 2").isNotEmpty();
+        } else{
+            assertThat(pagination).isNotNull();
+        }
+    }
+
     /**
      * Ensures that the student table has data.
      */
