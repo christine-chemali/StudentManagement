@@ -365,6 +365,28 @@ public class StudentsControllerUnitTest {
         verify(classNameFieldMock).clear();
     }
 
+    @Test
+    /**
+     * Tests the calculatePageCount method for determining the number of pages 
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testCalculatePageCount() throws Exception{
+        //Create a spy to be able to mock getTotalCount
+        StudentsController spyController = spy(studentsController);
+        //Inject the mocks into the spy
+        setField(spyController, "searchField", searchFieldMock);
+        //Config the mocks
+        when(searchFieldMock.getText()).thenReturn("Harry");
+        doReturn(47).when(spyController).getTotalCount(any(SearchCriteria.class));
+        //Call the private calculatePageCount method
+        Method calculatePageCountMethod = StudentsController.class.getDeclaredMethod("calculatePageCount");
+        calculatePageCountMethod.setAccessible(true);
+        int result = (int) calculatePageCountMethod.invoke(spyController);
+        //Verify the result (47 students / 15 per page = 4 pages)
+        assertEquals(4, result);
+        verify(spyController).getTotalCount(any(SearchCriteria.class));
+    }
+
     /**
      * Helper method to set a private field
      * @param target the object containing the field
