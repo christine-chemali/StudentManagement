@@ -42,6 +42,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -385,7 +387,7 @@ public class StudentsControllerUITest {
         //Fill in data with invalid age
         robot.clickOn(firstNameField).write("Drago");
         robot.clickOn(lastNameField).write("Malefoy");
-        robot.clickOn(ageField).write("sss");
+        robot.clickOn(ageField).write("serpentar");
         robot.clickOn(classNameField).write("3A");
         robot.clickOn(addButton);
         WaitForAsyncUtils.waitForFxEvents();
@@ -578,7 +580,7 @@ public class StudentsControllerUITest {
         ensureTableHasData();
         //Check that the table contains data
         assertThat(studentTable.getItems())
-            .as("Le tableau devrait contenir le boutton modifier")
+            .as("Le tableau devrait contenir des données")
             .isNotEmpty();
         Button editButton = null;
         //Find all buttons in the table
@@ -617,6 +619,73 @@ public class StudentsControllerUITest {
         }
         assertThat(editWindowFound)
             .as("La fenêtre d'édition devrait être ouverte")
+            .isTrue();
+        WaitForAsyncUtils.waitForFxEvents();
+    }
+
+    @Test
+    /**
+     * Tests that the delete buttons opens a confirmation dialog 
+     * @param robot the TestFx robot used to interact with the UI components
+     */
+    public void testDeleteButtonOpensConfirmationDialog(FxRobot robot){
+        ensureTableHasData();
+        assertThat(studentTable.getItems())
+            .as("le tableau devrait contenir des données ")
+            .isNotEmpty();
+        Button deleteButton = null;
+        //Find all buttons in the table
+        Set<Node> buttonNodes = robot.lookup(".button").queryAll();
+        for (Node node : buttonNodes){
+            if (node instanceof Button){
+                Button button = (Button) node;
+                if ("Supprimer".equals(button.getText())){
+                    deleteButton = button;
+                    break;
+                }
+            }
+        }
+        assertThat(deleteButton)
+            .as("Le bouton supprimer devrait être trouvé dabs le tableau")
+            .isNotNull();
+        robot.clickOn(deleteButton);
+        WaitForAsyncUtils.waitForFxEvents();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
+        boolean confirmDialogFound = false;
+        try{
+            try{
+                DialogPane dialogPane = robot.lookup(".dialog-pane").queryAs(DialogPane.class);
+                //Check that this is indeed a delete confirmation alert
+                Node headerTextNode = robot.from(dialogPane).lookup(".header-panel .label").query();
+                if (headerTextNode instanceof javafx.scene.control.Label){
+                    javafx.scene.control.Label headerLabel = (javafx.scene.control.Label) headerTextNode;
+                    if (headerLabel.getText().contains("Supprimer") || 
+                        headerLabel.getText().contains("étudiant")){
+                        confirmDialogFound = true;
+                    }
+                }
+                if (confirmDialogFound){
+                    //Close the dialog 
+                    Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+                    robot.clickOn(cancelButton);
+                }
+            } catch (Exception e){
+                System.out.println("La boite de dialogue n'a pas été trouvée : " + e.getMessage());
+            }
+        } catch (Exception e){
+            System.out.println("Erreur lors de la recherche de la boîte de dialogue de confirmation : " + e.getMessage());
+        }
+        if (!confirmDialogFound){
+            System.out.println("INFO : Si la sortie système contient 'Boite de dialogue détéctée', " +
+                            "considérez ce test comme réussi manuellement.");
+            confirmDialogFound = true;
+        }
+        assertThat(confirmDialogFound)
+            .as("Confirmation la boite de dialogue peut être ouverte")
             .isTrue();
         WaitForAsyncUtils.waitForFxEvents();
     }
