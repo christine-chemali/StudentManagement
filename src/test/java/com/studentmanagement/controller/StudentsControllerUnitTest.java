@@ -469,6 +469,18 @@ public class StudentsControllerUnitTest {
         }
     }
 
+    @Test
+    /**
+     * Tests that the ROWS_PER_PAGE constant is correctly defined in the StudentsController class.
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testRowsPerPageConstant() throws Exception{
+        //Verify that the ROWS_PER_PAGE constant is correctly defined
+        Field rowsPerPageField = StudentsController.class.getDeclaredField("ROWS_PER_PAGE");
+        rowsPerPageField.setAccessible(true);
+        int rowsPerPage = (int) rowsPerPageField.get(studentsController);
+        assertEquals(15, rowsPerPage);
+    }
 
     /**
      * Helper method to set a private field
