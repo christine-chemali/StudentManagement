@@ -1,6 +1,7 @@
 package com.studentmanagement.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -385,6 +386,32 @@ public class StudentsControllerUnitTest {
         //Verify the result (47 students / 15 per page = 4 pages)
         assertEquals(4, result);
         verify(spyController).getTotalCount(any(SearchCriteria.class));
+    }
+
+    @Test
+    /**
+     * Tests the loadStudentsPage method for handling exceptions during the loading of student data.
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testLoadStudentsPageWithException() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class)) {
+            //Create a spy to be able to mock searchData
+            StudentsController spyController = spy(studentsController);
+            //Inject the mocks into the spy
+            setField(spyController, "studentService", studentServiceMock);
+            setField(spyController, "searchField", searchFieldMock);
+            setField(spyController, "studentTable", studentTableMock);
+            //Config the mocks to throw an exception
+            when(searchFieldMock.getText()).thenReturn("Harry");
+            when(studentTableMock.getSortOrder()).thenReturn(FXCollections.observableArrayList());
+            doThrow(new RuntimeException("Erreur de test")).when(spyController).searchData(any(SearchCriteria.class));
+            //Call the private loadStudentsPage method
+            Method loadStudentsPageMethod = StudentsController.class.getDeclaredMethod("loadStudentsPage", int.class);
+            loadStudentsPageMethod.setAccessible(true);
+            loadStudentsPageMethod.invoke(spyController, 0);
+            //Verify that an error alert has been displayed
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), contains("Impossible de charger les données")));
+        }
     }
 
     /**
