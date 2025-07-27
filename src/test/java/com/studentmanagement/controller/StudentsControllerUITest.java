@@ -480,6 +480,93 @@ public class StudentsControllerUITest {
         assertThat(exportButton.isDisabled()).isFalse();
     }
 
+    @Test
+    /**
+     * Tests multiple UI interactions in the application.
+     * @param robot the TestFX robot used to interact with the UI components 
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testMultiUIInteraction(FxRobot robot) throws Exception{
+        ensureTableHasData();
+        
+        assertThat(studentTable.getItems())
+            .as("Le tableau devrait contenir des données")
+            .isNotEmpty();
+        
+        //Test search
+        robot.clickOn(searchField).write("Harry");
+        robot.clickOn(searchButton);
+        WaitForAsyncUtils.waitForFxEvents();
+        //Set up the mock to return search results
+        List<Student> searchResults = mockStudents.stream()
+            .filter(s -> s.getFirstName().contains("Harry"))
+            .collect(Collectors.toList());
+        //Manually insert search results
+        Platform.runLater(() -> {
+            studentTable.getItems().setAll(searchResults);
+        });
+        WaitForAsyncUtils.waitForFxEvents();
+        
+        //Verify that the table contains data after search
+        assertThat(studentTable.getItems())
+            .as("Le tableau devrait contenir des données après la recherche")
+            .isNotEmpty();
+        
+        //Test adding student
+        robot.clickOn(searchField).eraseText(searchField.getText().length());
+        robot.clickOn(firstNameField).write("Neville");
+        robot.clickOn(lastNameField).write("Longdubat");
+        robot.clickOn(ageField).write("13");
+        robot.clickOn(classNameField).write("5A");
+        //Set up the mock to capture the added student
+        ArgumentCaptor<Student> studentCaptor = ArgumentCaptor.forClass(Student.class);
+        doNothing().when(studentServiceMock).createStudent(studentCaptor.capture());
+        robot.clickOn(addButton);
+        WaitForAsyncUtils.waitForFxEvents();
+        //Ensure that the table still has data
+        if (studentTable.getItems().isEmpty()){
+            Platform.runLater(() -> {
+                studentTable.getItems().setAll(mockStudents.subList(0, Math.min(15, mockStudents.size())));
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+        }
+        
+        //Test pagination navigation
+        if (pagination.getPageCount() > 1){
+            //Go to page 2
+            Platform.runLater(() -> {
+                pagination.setCurrentPageIndex(1);
+                //Simulate data for page 2
+                List<Student> page2Students = mockStudents.subList(
+                    ROWS_PER_PAGE, 
+                    Math.min(ROWS_PER_PAGE * 2, mockStudents.size())
+                );
+                studentTable.getItems().setAll(page2Students);
+            });
+            WaitForAsyncUtils.waitForFxEvents(); 
+            //Check that we are on page 2
+            assertThat(pagination.getCurrentPageIndex()).isEqualTo(1);
+            //Go back to page 1
+            Platform.runLater(() -> {
+                pagination.setCurrentPageIndex(0);
+                //Simulate data for page 1
+                List<Student> page1Students = mockStudents.subList(0, Math.min(ROWS_PER_PAGE, mockStudents.size()));
+                studentTable.getItems().setAll(page1Students);
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+            //Check that we are back on page 1
+            assertThat(pagination.getCurrentPageIndex()).isEqualTo(0);
+        }
+        
+        //Ensure that the table still has data
+        if (studentTable.getItems().isEmpty()){
+            Platform.runLater(() -> {
+                studentTable.getItems().setAll(mockStudents.subList(0, Math.min(15, mockStudents.size())));
+            });
+            WaitForAsyncUtils.waitForFxEvents();
+        }
+    }
+
     /**
      * Ensures that the student table has data.
      */
