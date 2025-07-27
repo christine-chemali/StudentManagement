@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
@@ -45,6 +46,7 @@ import javafx.scene.control.Pagination;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.scene.Node;
 
 @ExtendWith({MockitoExtension.class, ApplicationExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -565,6 +567,58 @@ public class StudentsControllerUITest {
             });
             WaitForAsyncUtils.waitForFxEvents();
         }
+    }
+
+    @Test
+    /**
+     * Tests that the edit button opens the edit window
+     * @param robot the TestFx robot used to interact with the UI components
+     */
+    public void testEditButtonOpensEditWindow(FxRobot robot){
+        ensureTableHasData();
+        //Check that the table contains data
+        assertThat(studentTable.getItems())
+            .as("Le tableau devrait contenir le boutton modifier")
+            .isNotEmpty();
+        Button editButton = null;
+        //Find all buttons in the table
+        Set<Node> buttonNodes = robot.lookup(".button").queryAll();
+        for (Node node : buttonNodes){
+            if (node instanceof Button){
+                Button button = (Button) node;
+                if ("Modifier".equals(button.getText())){
+                    editButton = button;
+                    break;
+                }
+            }
+        }
+        //Check that the button was found
+        assertThat(editButton)
+            .as("Le bouton modifier devrait être trouvé dans le tableau")
+            .isNotNull();
+        robot.clickOn(editButton);
+        WaitForAsyncUtils.waitForFxEvents();
+        try{
+            Thread.sleep(500);
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
+        boolean editWindowFound = false;
+        try{
+            Set<Node> textFields = robot.lookup(".text-field").queryAll();
+            if (textFields.size() > 4){
+                editWindowFound = true;
+            }
+        } catch (Exception e){
+            System.out.println("Exception lors de la recherche de la fenêtre d'édition : " + e.getMessage());
+        }
+        if (System.out.toString().contains("Boite de dialogue détéctée")){
+            editWindowFound = true;
+        }
+        assertThat(editWindowFound)
+            .as("La fenêtre d'édition devrait être ouverte")
+            .isTrue();
+        WaitForAsyncUtils.waitForFxEvents();
     }
 
     /**
