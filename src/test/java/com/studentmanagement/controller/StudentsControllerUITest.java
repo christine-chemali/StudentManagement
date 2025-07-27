@@ -690,6 +690,67 @@ public class StudentsControllerUITest {
         WaitForAsyncUtils.waitForFxEvents();
     }
 
+    @Test
+    /**
+     * Tests manual UI interaction with the application.
+     * @param robot the TestFX robot used to interact with the UI components 
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testManualUIInteraction(FxRobot robot) throws Exception {
+        ensureTableHasData();
+        assertThat(studentTable.getItems())
+            .as("Le tableau devrait contenir des données")
+            .isNotEmpty();
+
+        Platform.runLater(() -> {
+            javafx.scene.control.Label testLabel = new javafx.scene.control.Label("TEST MANUEL EN COURS");
+            testLabel.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-padding: 10; -fx-font-weight: bold;");
+            
+            Scene scene = studentTable.getScene();
+            javafx.scene.layout.StackPane overlay = new javafx.scene.layout.StackPane();
+            overlay.getChildren().add(testLabel);
+            overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.3);");
+            overlay.setAlignment(javafx.geometry.Pos.TOP_CENTER);
+            
+            if (scene.getRoot() instanceof javafx.scene.layout.Pane){
+                javafx.scene.layout.Pane root = (javafx.scene.layout.Pane) scene.getRoot();
+                root.getChildren().add(overlay);
+                javafx.scene.layout.StackPane.setAlignment(overlay, javafx.geometry.Pos.TOP_CENTER);
+                overlay.prefWidthProperty().bind(scene.widthProperty());
+                overlay.setMinHeight(50);
+            }
+        });
+        System.out.println("=== TEST MANUEL COMMENCE ===");
+        System.out.println("Vous pouvez maintenant interagir avec l'interface pendant 30 secondes");
+        try {
+            Thread.sleep(30000); // 30 seconds for manual interaction
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
+        Platform.runLater(() -> {
+            Scene scene = studentTable.getScene();
+            if (scene.getRoot() instanceof javafx.scene.layout.Pane){
+                javafx.scene.layout.Pane root = (javafx.scene.layout.Pane) scene.getRoot();
+                root.getChildren().removeIf(node -> {
+                    if (node instanceof javafx.scene.layout.StackPane){
+                        javafx.scene.layout.StackPane sp = (javafx.scene.layout.StackPane) node;
+                        for (javafx.scene.Node child : sp.getChildren()) {
+                            if (child instanceof javafx.scene.control.Label) {
+                                javafx.scene.control.Label label = (javafx.scene.control.Label) child;
+                                if ("TEST MANUEL EN COURS".equals(label.getText())){
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                });
+            }
+        });
+        assertThat(studentTable).isNotNull();
+        System.out.println("=== TEST MANUEL TERMINÉ ===");
+    }
+
     /**
      * Ensures that the student table has data.
      */
