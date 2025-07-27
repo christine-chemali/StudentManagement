@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -139,6 +140,26 @@ public class StudentsControllerUnitTest {
         
         //Configure behavior for sorting columns
         when(studentTableMock.getSortOrder()).thenReturn(FXCollections.observableArrayList());
+    }
+
+    @Test
+    /**
+     * Tests the setter for the student service
+     */
+    public void testSetStudentService(){
+        StudentService newService = mock(StudentService.class);
+        studentsController.setStudentService(newService);
+        assertEquals(newService, getField(studentsController, "studentService"));
+    }    
+
+    @Test
+    /**
+     * Tests the setter for the import/export service
+     */
+    public void testSetImportExportService(){
+        ImportExportService newService = mock(ImportExportService.class);
+        studentsController.setImportExportService(newService);
+        assertEquals(newService, getField(studentsController, "importExportService"));
     }
 
     /**
