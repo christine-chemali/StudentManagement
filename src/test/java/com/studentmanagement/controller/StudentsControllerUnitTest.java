@@ -250,6 +250,26 @@ public class StudentsControllerUnitTest {
         verify(spyController).refreshTableFromStart();
     }
 
+    @Test
+    /**
+     * Test for handle import
+     */
+    public void testHandleImportSuccess() {
+        //Check that the dependencies are properly injected.
+        assertNotNull(getField(studentsController, "importButton"));
+        assertNotNull(getField(studentsController, "importExportService"));
+    }
+
+    @Test
+    /**
+     * Test for handleExport
+     */
+    public void testHandleExportSuccess(){
+        //Check that the dependencies are properly injected.
+        assertNotNull(getField(studentsController, "exportButton"));
+        assertNotNull(getField(studentsController, "importExportService"));
+    }
+
     /**
      * Helper method to set a private field
      * @param target the object containing the field
