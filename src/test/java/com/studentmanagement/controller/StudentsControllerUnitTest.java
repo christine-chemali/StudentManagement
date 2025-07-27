@@ -348,6 +348,23 @@ public class StudentsControllerUnitTest {
         verify(importExportServiceMock).exportToCSV(studentsToExport, testFile);
     }
 
+    @Test
+    /**
+     * Tests the clearAddForm method for resetting the add student form fields.
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testClearAddForm() throws Exception{
+        //Call the private clearAddForm method
+        Method clearAddFormMethod = StudentsController.class.getDeclaredMethod("clearAddForm");
+        clearAddFormMethod.setAccessible(true);
+        clearAddFormMethod.invoke(studentsController);
+        //Verify that all fields have been cleared
+        verify(firstNameFieldMock).clear();
+        verify(lastNameFieldMock).clear();
+        verify(ageFieldMock).clear();
+        verify(classNameFieldMock).clear();
+    }
+
     /**
      * Helper method to set a private field
      * @param target the object containing the field
