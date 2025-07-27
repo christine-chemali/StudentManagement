@@ -233,6 +233,23 @@ public class StudentsControllerUnitTest {
         }
     }
     
+    @Test
+    /**
+     * Tests the handling of the search functionality.
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testHandleSearch() throws Exception{
+        //Create a spy to be able to mock refreshTableFromStart
+        StudentsController spyController = spy(studentsController);
+        doNothing().when(spyController).refreshTableFromStart();
+        //Call the protected handleSearch method
+        Method handleSearchMethod = StudentsController.class.getDeclaredMethod("handleSearch");
+        handleSearchMethod.setAccessible(true);
+        handleSearchMethod.invoke(spyController);
+        //Verify that refreshTableFromStart has been called
+        verify(spyController).refreshTableFromStart();
+    }
+
     /**
      * Helper method to set a private field
      * @param target the object containing the field
