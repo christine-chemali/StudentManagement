@@ -438,6 +438,38 @@ public class StudentsControllerUnitTest {
         }
     }
 
+    @Test
+    /**
+     * Tests the handleAddStudent method for handling exceptions during the addition of a new student.
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testHandleAddStudentWithServiceException() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class);
+             MockedStatic<StudentValidator> studentValidatorMock = mockStatic(StudentValidator.class)){
+            //Create a valid validation result
+            StudentValidator.ValidationResult validResult = mock(StudentValidator.ValidationResult.class);
+            when(validResult.isValid()).thenReturn(true);
+            //Create a test student
+            Student newStudent = mock(Student.class);
+            //Config static mocks
+            studentValidatorMock.when(() -> StudentValidator.validateForCreation(
+                firstNameFieldMock, lastNameFieldMock, ageFieldMock, classNameFieldMock))
+                .thenReturn(validResult);
+            studentValidatorMock.when(() -> StudentValidator.createStudentFromFields(
+                firstNameFieldMock, lastNameFieldMock, ageFieldMock, classNameFieldMock))
+                .thenReturn(newStudent);
+            //Config the service to throw an exception
+            doThrow(new RuntimeException("Erreur de base de données")).when(studentServiceMock).createStudent(newStudent);
+            //Call the private handleAddStudent method
+            Method handleAddStudentMethod = StudentsController.class.getDeclaredMethod("handleAddStudent");
+            handleAddStudentMethod.setAccessible(true);
+            handleAddStudentMethod.invoke(studentsController);
+            //Verify that an error alert has been displayed
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur"), contains("Une erreur est survenue lors de l'ajout")));
+        }
+    }
+
+
     /**
      * Helper method to set a private field
      * @param target the object containing the field
