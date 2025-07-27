@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -14,6 +15,8 @@ import org.mockito.quality.Strictness;
 import com.studentmanagement.model.Student;
 import com.studentmanagement.service.ImportExportService;
 import com.studentmanagement.service.StudentService;
+import com.studentmanagement.utils.AlertUtils;
+import com.studentmanagement.utils.StudentValidator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,6 +27,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,6 +164,44 @@ public class StudentsControllerUnitTest {
         ImportExportService newService = mock(ImportExportService.class);
         studentsController.setImportExportService(newService);
         assertEquals(newService, getField(studentsController, "importExportService"));
+    }
+
+    @Test
+    /**
+     * Tests the successful handling of adding a student
+     * @throws Exception if &ny unexpected error occurs during the test execution
+     */
+    public void testHandleAddStudentSuccess() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class);
+        MockedStatic<StudentValidator> studentValidatorMock = mockStatic(StudentValidator.class)){
+            //Create a spy to be able to mock refresTable
+            StudentsController spyController = spy(studentsController);
+            doNothing().when(spyController).refreshTable();
+            //Create a valid validation result
+            StudentValidator.ValidationResult validResult = mock(StudentValidator.ValidationResult.class);
+            when(validResult.isValid()).thenReturn(true);
+            //Create a test student(mocked)
+            Student newStudent = mock(Student.class);
+            when(newStudent.getFirstName()).thenReturn("Harry");
+            when(newStudent.getLastName()).thenReturn("Potter");
+            when(newStudent.getAge()).thenReturn(13);
+            when(newStudent.getClassName()).thenReturn("5A");
+            //Config static mocks
+            studentValidatorMock.when(() -> StudentValidator.validateForCreation(firstNameFieldMock, lastNameFieldMock, ageFieldMock, classNameFieldMock)).thenReturn(validResult);
+            studentValidatorMock.when(() -> StudentValidator.createStudentFromFields(firstNameFieldMock, lastNameFieldMock, ageFieldMock, classNameFieldMock)).thenReturn(newStudent);
+            //Call the private handleAddStudent method
+            Method handleAddStudentMethod = StudentsController.class.getDeclaredMethod("handleAddStudent");
+            handleAddStudentMethod.setAccessible(true);
+            handleAddStudentMethod.invoke(spyController);
+            //Verify that the method have been called
+            verify(studentServiceMock).createStudent(newStudent);
+            verify(spyController).refreshTable();
+            verify(firstNameFieldMock).clear();
+            verify(lastNameFieldMock).clear();
+            verify(ageFieldMock).clear();
+            verify(classNameFieldMock).clear();
+            alertUtilsMock.verify(() -> AlertUtils.showInformation(eq("Succès"), eq("L'étudiant a été ajouté avec succès")));
+        }
     }
 
     /**
