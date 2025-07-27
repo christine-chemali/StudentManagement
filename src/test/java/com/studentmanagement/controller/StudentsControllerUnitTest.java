@@ -1,5 +1,7 @@
 package com.studentmanagement.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -204,6 +206,33 @@ public class StudentsControllerUnitTest {
         }
     }
 
+    @Test
+    /**
+     * Tests the handling of adding a student with invalid input
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testHandleAddStudentWithInvalidInput() throws Exception{
+        try (MockedStatic<AlertUtils> alertUtilsMock = mockStatic(AlertUtils.class);
+        MockedStatic<StudentValidator> studentValidatorMock = mockStatic(StudentValidator.class)){
+            //Create an invalid validation result
+            StudentValidator.ValidationResult invalidResult = mock(StudentValidator.ValidationResult.class);
+            when(invalidResult.isValid()).thenReturn(false);
+            when(invalidResult.getErrorMessage()).thenReturn("Prénom invalide");
+            when(invalidResult.getFocusField()).thenReturn(firstNameFieldMock);
+            //Config static mocks
+            studentValidatorMock.when(() -> StudentValidator.validateForCreation(firstNameFieldMock, lastNameFieldMock, ageFieldMock, classNameFieldMock)).thenReturn(invalidResult);
+            //Call the private handleAddStudent method
+            Method handleAddStudentMethod = StudentsController.class.getDeclaredMethod("handleAddStudent");
+            handleAddStudentMethod.setAccessible(true);
+            handleAddStudentMethod.invoke(studentsController);
+            //Verify that the methods have been called
+            alertUtilsMock.verify(() -> AlertUtils.showError(eq("Erreur de saisie"), eq("Prénom invalide")));
+            verify(firstNameFieldMock).selectAll();
+            verify(firstNameFieldMock).requestFocus();
+            verify(studentServiceMock, never()).createStudent(any(Student.class));
+        }
+    }
+    
     /**
      * Helper method to set a private field
      * @param target the object containing the field
