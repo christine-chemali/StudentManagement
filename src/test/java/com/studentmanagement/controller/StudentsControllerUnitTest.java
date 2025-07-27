@@ -311,6 +311,25 @@ public class StudentsControllerUnitTest {
         verify(studentServiceMock).searchStudents(criteria);
     }
 
+    @Test
+    /**
+     * Tests the getTotalCount method for retrieving the total number of students based on search criteria.
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testGetTotalCount() throws Exception{
+        //Create search criteria
+        SearchCriteria criteria = new SearchCriteria("Harry");
+        //Config the mock to return a total number
+        when(studentServiceMock.getTotalStudents(criteria)).thenReturn(100);
+        //Call the protected getTotalCount method
+        Method getTotalCountMethod = StudentsController.class.getDeclaredMethod("getTotalCount", SearchCriteria.class);
+        getTotalCountMethod.setAccessible(true);
+        int result = (int) getTotalCountMethod.invoke(studentsController, criteria);
+        //Verify the result
+        assertEquals(100, result);
+        verify(studentServiceMock).getTotalStudents(criteria);
+    }
+
     /**
      * Helper method to set a private field
      * @param target the object containing the field
