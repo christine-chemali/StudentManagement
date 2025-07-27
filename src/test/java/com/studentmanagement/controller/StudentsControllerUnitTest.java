@@ -29,6 +29,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -328,6 +329,23 @@ public class StudentsControllerUnitTest {
         //Verify the result
         assertEquals(100, result);
         verify(studentServiceMock).getTotalStudents(criteria);
+    }
+
+    @Test
+    /**
+     * Tests the exportToCSV method for exporting student data to a CSV file.
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testExportToCSV() throws Exception{
+        //Create data and a test file
+        List<Student> studentsToExport = testStudents.subList(0, 5);
+        File testFile = new File("test.csv");
+        //Call the protected exportToCSV method
+        Method exportToCSVMethod = StudentsController.class.getDeclaredMethod("exportToCSV", List.class, File.class);
+        exportToCSVMethod.setAccessible(true);
+        exportToCSVMethod.invoke(studentsController, studentsToExport, testFile);
+        //Verify that the export service has been called
+        verify(importExportServiceMock).exportToCSV(studentsToExport, testFile);
     }
 
     /**
