@@ -270,6 +270,25 @@ public class StudentsControllerUnitTest {
         assertNotNull(getField(studentsController, "importExportService"));
     }
 
+    @Test
+    /**
+     * Tests for setupTableColumns
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testSetupTableColumns() throws Exception{
+        //Call the protected setupTableColumns method
+        Method setupTableColumnsMethod = StudentsController.class.getDeclaredMethod("setupTableColumns");
+        setupTableColumnsMethod.setAccessible(true);
+        setupTableColumnsMethod.invoke(studentsController);
+        //Verify that the columns have been configured
+        verify(idColumnMock).setCellValueFactory(any());
+        verify(firstNameColumnMock).setCellValueFactory(any());
+        verify(lastNameColumnMock).setCellValueFactory(any());
+        verify(ageColumnMock).setCellValueFactory(any());
+        verify(classNameColumnMock).setCellValueFactory(any());
+        verify(averageGradeColumnMock).setCellValueFactory(any());
+    }
+
     /**
      * Helper method to set a private field
      * @param target the object containing the field
