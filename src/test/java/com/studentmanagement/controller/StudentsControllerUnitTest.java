@@ -18,6 +18,7 @@ import com.studentmanagement.model.Student;
 import com.studentmanagement.service.ImportExportService;
 import com.studentmanagement.service.StudentService;
 import com.studentmanagement.utils.AlertUtils;
+import com.studentmanagement.utils.SearchCriteria;
 import com.studentmanagement.utils.StudentValidator;
 
 import javafx.collections.FXCollections;
@@ -287,6 +288,27 @@ public class StudentsControllerUnitTest {
         verify(ageColumnMock).setCellValueFactory(any());
         verify(classNameColumnMock).setCellValueFactory(any());
         verify(averageGradeColumnMock).setCellValueFactory(any());
+    }
+
+    @Test
+    /**
+     * Tests the searchData method for retrieving student data based on search criteria.
+     * @throws Exception if any unexpected error occurs during the test execution
+     */
+    public void testSearchData() throws Exception{
+        //Create search criteria
+        SearchCriteria criteria = new SearchCriteria("Harry");
+        //Config the mock to return data
+        when(studentServiceMock.searchStudents(criteria)).thenReturn(testStudents.subList(0, 5));
+        //Call the protected searchData method
+        Method searchDataMethod = StudentsController.class.getDeclaredMethod("searchData", SearchCriteria.class);
+        searchDataMethod.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        List<Student> result = (List<Student>) searchDataMethod.invoke(studentsController, criteria);
+        //Verify the result
+        assertNotNull(result);
+        assertEquals(5, result.size());
+        verify(studentServiceMock).searchStudents(criteria);
     }
 
     /**
