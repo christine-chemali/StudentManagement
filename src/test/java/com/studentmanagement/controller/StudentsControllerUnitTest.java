@@ -482,6 +482,19 @@ public class StudentsControllerUnitTest {
         assertEquals(15, rowsPerPage);
     }
 
+    @Test
+    /**
+     * Tests the default constructor of the StudentsController class.
+     */
+    public void testDefaultConstructor(){
+        StudentsController controller = new StudentsController();
+        //Verify that the controller has been created
+        assertNotNull(controller);
+        //Services will be injected later via setters or @FXML
+        assertNull(getField(controller, "studentService"));
+        assertNull(getField(controller, "importExportService"));
+    }
+
     /**
      * Helper method to set a private field
      * @param target the object containing the field
