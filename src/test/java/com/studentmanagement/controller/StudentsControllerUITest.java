@@ -460,6 +460,26 @@ public class StudentsControllerUITest {
         }
     }
 
+    @Test
+    /**
+     * Tests the functionnality of the import button
+     * @param robot the TestFx robot used to interact with the UI components
+     */
+    public void testImportButtonClick(FxRobot robot){
+        robot.clickOn(importButton);
+        assertThat(importButton.isDisabled()).isFalse();
+    }
+
+    @Test
+    /**
+     * Tests the functionnality of the export button
+     * @param robot the TestFx robot used to interact with the UI components
+     */
+    public void testExportButtonClick(FxRobot robot){
+        robot.clickOn(exportButton);
+        assertThat(exportButton.isDisabled()).isFalse();
+    }
+
     /**
      * Ensures that the student table has data.
      */
