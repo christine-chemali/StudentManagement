@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <BorderPane fx:id="mainContainer" xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.studentmanagement.controller.StudentsStatsController"
-            prefHeight="600.0" prefWidth="800.0">
+            prefHeight="600.0" prefWidth="800.0"
+            styleClass="stats-main-container">
     <top>
-        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 10;">
-            <Label text="Statistiques des étudiants" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+        <HBox spacing="10" alignment="CENTER_LEFT" styleClass="stats-header">
+            <Label text="Statistiques des étudiants" styleClass="page-title"/>
         </HBox>
     </top>
-    
+   
     <bottom>
-        <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10;">
+        <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="stats-footer">
             <Button text="Je rafraîchis" onAction="#refreshCharts"/>
             <Button fx:id="exportButton" text="J'exporte en PDF"/>
         </HBox>
     </bottom>
-    
+   
     <fx:define>
         <fx:reference source="controller" fx:id="controllerRef"/>
     </fx:define>
-    
+   
     <fx:script>
         mainContainer.getProperties().put("controller", controllerRef);
     </fx:script>
