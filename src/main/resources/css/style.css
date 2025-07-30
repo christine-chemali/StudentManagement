@@ -585,3 +585,116 @@ Shadow colors:
     -fx-scale-x: 0.98;
     -fx-scale-y: 0.98;
 }
+
+/***************************************
+****  COMPARISON BY SUBJECTS      ****
+***************************************/
+
+/* Container for the subject selection */
+.subjects-selection-container {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-padding: 5px 0;
+    padding: 5px 0;
+}
+
+/* Container for the selection buttons */
+.selection-buttons {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-padding: 5px 0 0 0;
+    padding: 5px 0 0 0;
+}
+
+/*******************
+**** ListView ******
+********************/
+
+.subjects-list {
+    -fx-background-color: -fx-text-field-color;
+    background-color: -fx-text-field-color;
+    -fx-border-color: -fx-light-color;
+    border-color: -fx-light-color;
+    -fx-border-width: 1px;
+    border-width: 1px;
+    -fx-border-radius: 8px;
+    border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-font-family: "System", Arial, sans-serif;
+    font-family: "System", Arial, sans-serif;
+    -fx-font-size: 14px;
+    font-size: 14px;
+}
+
+/* Removes the visible focus on the ListView */
+.subjects-list:focused {
+    -fx-background-color: -fx-text-field-color;
+    background-color: -fx-text-field-color;
+    -fx-background-insets: 0;
+    -fx-border-color: -fx-medium-dark-color;
+    border-color: -fx-medium-dark-color;
+}
+
+/* Style for the list items */
+.subjects-list .list-cell {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-text-fill: -fx-dark-color;
+    -fx-padding: 8px 12px;
+    padding: 8px 12px;
+    -fx-font-family: "System", Arial, sans-serif;
+    font-family: "System", Arial, sans-serif;
+    -fx-font-size: 14px;
+    font-size: 14px;
+}
+
+/* Hover on the list items */
+.subjects-list .list-cell:hover {
+    -fx-background-color: -fx-light-color;
+    background-color: -fx-light-color;
+}
+
+/* Selection of the list items */
+.subjects-list .list-cell:selected {
+    -fx-background-color: -fx-medium-color;
+    background-color: -fx-medium-color;
+    -fx-text-fill: -fx-dark-color;
+}
+
+/* Focus on the selected items */
+.subjects-list .list-cell:selected:focused {
+    -fx-background-color: -fx-medium-color;
+    background-color: -fx-medium-color;
+    -fx-text-fill: -fx-dark-color;
+}
+
+/* Removes the focus borders on the cells */
+.subjects-list .list-cell:focused {
+    -fx-background-insets: 0;
+    -fx-border-width: 0;
+    border-width: 0;
+}
+
+/* Style for the empty cells */
+.subjects-list .list-cell:empty {
+    -fx-background-color: transparent;
+    background-color: transparent;
+}
+
+/* Scrollbar for the ListView */
+.subjects-list .scroll-bar:vertical {
+    -fx-background-color: -fx-light-color;
+    background-color: -fx-light-color;
+    -fx-background-radius: 4px;
+}
+
+.subjects-list .scroll-bar:vertical .thumb {
+    -fx-background-color: -fx-medium-color;
+    background-color: -fx-medium-color;
+    -fx-background-radius: 4px;
+}
+
+.subjects-list .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: -fx-medium-dark-color;
+    background-color: -fx-medium-dark-color;
+}
