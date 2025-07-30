@@ -377,3 +377,110 @@ Shadow colors:
     -fx-border-width: 1px 0 0 0;
     border-width: 1px 0 0 0;
 }
+
+/***************************************
+****   CONFIGURATION FORM    ****
+***************************************/
+
+/* Main container */
+.main-container {
+    -fx-padding: 15px;
+    padding: 15px;
+    -fx-background-color: -fx-medium-color;
+    background-color: -fx-medium-color;
+}
+
+/* Section title */
+.section-title {
+    -fx-font-size: 14px;
+    font-size: 14px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: -fx-dark-color;
+    -fx-font-family: "System", Arial, sans-serif;
+    font-family: "System", Arial, sans-serif;
+}
+
+/* Form grid */
+.form-grid {
+    -fx-background-color: transparent;
+    background-color: transparent;
+}
+
+/* Button container */
+.button-container {
+    -fx-padding: 10px 0 0 0;
+    padding: 10px 0 0 0;
+}
+
+/*******************
+**** ComboBox ******
+********************/
+
+.combo-box {
+    -fx-background-color: -fx-text-field-color;
+    background-color: -fx-text-field-color;
+    -fx-background-radius: 8px;
+    -fx-border-color: -fx-light-color;
+    border-color: -fx-light-color;
+    -fx-border-width: 1px;
+    border-width: 1px;
+    -fx-border-radius: 8px;
+    border-radius: 8px;
+    -fx-font-family: "System", Arial, sans-serif;
+    font-family: "System", Arial, sans-serif;
+    -fx-font-size: 14px;
+    font-size: 14px;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: -fx-dark-color;
+    -fx-font-family: "System", Arial, sans-serif;
+    font-family: "System", Arial, sans-serif;
+    -fx-font-size: 14px;
+    font-size: 14px;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: -fx-light-color;
+    background-color: -fx-light-color;
+    -fx-background-radius: 0 8px 8px 0;
+}
+
+.combo-box .arrow {
+    -fx-background-color: -fx-dark-color;
+    background-color: -fx-dark-color;
+}
+
+/* Style for the dropdown list */
+.combo-box-popup .list-view {
+    -fx-background-color: -fx-text-field-color;
+    background-color: -fx-text-field-color;
+    -fx-border-color: -fx-light-color;
+    border-color: -fx-light-color;
+    -fx-border-width: 1px;
+    border-width: 1px;
+    -fx-border-radius: 8px;
+    border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(154, 154, 154, 0.2), 8, 0, 0, 2);
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: transparent;
+    background-color: transparent;
+    -fx-text-fill: -fx-dark-color;
+    -fx-padding: 8px 12px;
+    padding: 8px 12px;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: -fx-light-color;
+    background-color: -fx-light-color;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: -fx-medium-color;
+    background-color: -fx-medium-color;
+    -fx-text-fill: -fx-dark-color;
+}
