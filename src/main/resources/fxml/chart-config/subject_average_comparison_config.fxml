@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="10" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      styleClass="main-container">
+    
+    <Label text="Configuration de la comparaison des moyennes par matière" styleClass="section-title"/>
+    
+    <GridPane hgap="10" vgap="10" styleClass="form-grid">
+        <padding><Insets top="10" bottom="10"/></padding>
+        
+        <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="150"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+        
+        <Label text="Étudiant:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <ComboBox fx:id="studentComboBox" prefWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        
+        <Label text="Options de comparaison:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="options-container">
+            <CheckBox fx:id="compareWithClassCheckBox" text="Comparer avec la moyenne de classe" selected="true"/>
+            <CheckBox fx:id="showDifferenceCheckBox" text="Afficher la différence (écart)" selected="false"/>
+        </VBox>
+        
+        <Label text="Matières à inclure:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="subjects-selection-container">
+            <ListView fx:id="subjectsListView" prefHeight="150" styleClass="subjects-list"/>
+            <HBox spacing="10" styleClass="selection-buttons">
+                <Button fx:id="selectAllButton" text="Tout sélectionner"/>
+                <Button fx:id="deselectAllButton" text="Tout désélectionner"/>
+            </HBox>
+        </VBox>
+    </GridPane>
+    
+    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="button-container">
+        <Button fx:id="cancelButton" text="J'annule" />
+        <Button fx:id="applyButton" text="J'applique" />
+    </HBox>
+</VBox>
