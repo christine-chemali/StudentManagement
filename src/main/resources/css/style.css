@@ -333,3 +333,47 @@ Shadow colors:
     -fx-effect: dropshadow(gaussian, rgba(154, 154, 154, 0.2), 8, 0, 0, 2);
 }
 
+/***************************************
+****   STUDENT STATISTICS PAGE ****
+***************************************/
+
+/* Main container for the statistics */
+.stats-main-container {
+    -fx-background-color: -fx-medium-color;
+    background-color: -fx-medium-color;
+}
+
+/* Header of the page */
+.stats-header {
+    -fx-padding: 10px;
+    padding: 10px;
+    -fx-background-color: -fx-very-light-color;
+    background-color: -fx-very-light-color;
+    -fx-border-color: transparent transparent -fx-light-color transparent;
+    border-color: transparent transparent -fx-light-color transparent;
+    -fx-border-width: 0 0 1px 0;
+    border-width: 0 0 1px 0;
+}
+
+/* Main title of the page */
+.page-title {
+    -fx-font-size: 18px;
+    font-size: 18px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: -fx-dark-color;
+    -fx-font-family: "System", Arial, sans-serif;
+    font-family: "System", Arial, sans-serif;
+}
+
+/* Footer with the buttons */
+.stats-footer {
+    -fx-padding: 10px;
+    padding: 10px;
+    -fx-background-color: -fx-very-light-color;
+    background-color: -fx-very-light-color;
+    -fx-border-color: -fx-light-color transparent transparent transparent;
+    border-color: -fx-light-color transparent transparent transparent;
+    -fx-border-width: 1px 0 0 0;
+    border-width: 1px 0 0 0;
+}
