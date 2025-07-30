@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="10" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      styleClass="main-container">
+    
+    <Label text="Configuration de l'aperçu annuel des notes" styleClass="section-title"/>
+    
+    <GridPane hgap="10" vgap="10" styleClass="form-grid">
+        <padding><Insets top="10" bottom="10"/></padding>
+        
+        <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="120"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+        
+        <Label text="Étudiant:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <ComboBox fx:id="studentComboBox" prefWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        
+        <Label text="Année académique:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <ComboBox fx:id="yearComboBox" prefWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        
+        <Label text="Options d'affichage:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="options-container">
+            <CheckBox fx:id="showAllSubjectsCheckBox" text="Afficher toutes les matières" selected="true"/>
+            <CheckBox fx:id="includeFailedCheckBox" text="Inclure les matières échouées" selected="true"/>
+            <CheckBox fx:id="showAverageLineCheckBox" text="Afficher la ligne de moyenne générale" selected="true"/>
+        </VBox>
+    </GridPane>
+    
+    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="button-container">
+        <Button fx:id="cancelButton" text="J'annule" />
+        <Button fx:id="applyButton" text="J'applique" styleClass="primary-button"/>
+    </HBox>
+</VBox>
