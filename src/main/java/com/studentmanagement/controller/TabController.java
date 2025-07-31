@@ -47,14 +47,27 @@ public class TabController implements Initializable {
      * Inject statistics service in statistics tab controllers
      */
     private void injectStatisticsService(){
-
+        //Inject in StudentStatsController
+        if (studentStats != null && studentStats.getContent() != null){
+            StudentStatsController controller = findController(studentStats.getContent(), StudentStatsController.class);
+            if(controller != null){
+                controller.setStatisticsService(statisticsService);
+            }
+        }
+        //Inject in StudentsStatsController
+        if (studentsStats != null && studentsStats.getContent() != null){
+            StudentsStatsController controller = findController(studentsStats.getContent(), StudentsStatsController.class);
+            if(controller != null){
+                controller.setStatisticsService(statisticsService);
+            }
+        }
     }
     
     /**
      * Config backup tab
      */
     private void setupBackupTab(){
-        
+
     }
 
     @FXML
