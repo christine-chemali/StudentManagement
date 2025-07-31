@@ -2981,7 +2981,6 @@ StudentManagementSystem/
 │   │   │       │   ├── student.fxml
 │   │   │       │   ├── students.fxml
 │   │   │       │   ├── tab.fxml
-│   │   │       │   ├── welcome.fxml
 │   │   │       │   ├── chart_config/
 │   │   │       │   │   ├── student_grade_evolution_config.fxml
 │   │   │       │   │   ├── yearly_grade_overview_config.fxml
