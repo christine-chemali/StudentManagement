@@ -31,7 +31,7 @@ public class TabController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Initialize the controller
-        System.out.println("TabController initialized");
+        System.out.println("TabController est initialisé");
         //Wait for tabs to load
         mainTabPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null){
@@ -67,11 +67,37 @@ public class TabController implements Initializable {
      * Config backup tab
      */
     private void setupBackupTab(){
-
+        //Verify if backup tab exist
+        if (backupTab != null && backupTab.getContent() != null){
+            //BackupController create its own backup saving service, do not have to inject here
+            System.out.println("Backup tab est initialisée");
+        }
     }
 
-    @FXML
-    private void handleButtonAction() {
-        System.out.println("Button clicked!");
+    /**
+     * Recursively searches for a controller of the specified type within 
+     * the given JavaFX node and its children.
+     *
+     * @param <T> the type of the controller to find
+     * @param node the JavaFX node to search within
+     * @param controllerClass the class type of the controller to find
+     * @return the found controller of type T, or null if not found
+     */
+    @SuppressWarnings("unchecked")
+    private <T> T findController(javafx.scene.Node node, Class<T> controllerClass){
+        Object controller = node.getProperties().get("controller");
+        if (controller != null && controllerClass.isInstance(controller)){
+            return (T) controller;
+        }
+        if (node instanceof javafx.scene.Parent){
+            for (javafx.scene.Node child : ((javafx.scene.Parent) node).getChildrenUnmodifiable()){
+                T result = findController(child, controllerClass);
+                if (result != null){
+                    return result;
+                }
+            }
+        }
+        return null;
     }
+
 }
